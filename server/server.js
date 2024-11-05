@@ -26,7 +26,7 @@ app.use(cors())
 
 // Extended MongoDB schema for User (includes karma tracking)
 const ChartSchema = new mongoose.Schema({
-	id: Number,
+	id: String,
 	year: Number,
 	month: Number,
 	date: Number,
@@ -55,46 +55,6 @@ const ChartSchema = new mongoose.Schema({
 })
 
 const Chart = mongoose.model('Chart', ChartSchema)
-
-// Schema for Comments
-const CommentSchema = new mongoose.Schema({
-	content: { type: String, required: true },
-	user: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Chart',
-		required: true,
-	}, // User who commented
-	post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: true }, // Post the comment belongs to
-	parentComment: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Comment',
-		default: null,
-	}, // To handle replies
-	createdAt: { type: Date, default: Date.now },
-	karma_type: {
-		type: String,
-		enum: ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'],
-	},
-	likes: { type: Number, default: 0 },
-	replies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }], // For nested replies
-})
-
-const Comment = mongoose.model('Comment', CommentSchema)
-
-// Schema for Posts
-const PostSchema = new mongoose.Schema({
-	content: { type: String, required: true },
-	karma_types: {
-		type: Map, // Use Map to allow key-value pairs
-		of: Number, // Values are numbers representing karma
-	},
-	created_at: { type: Date, default: Date.now },
-	user: { type: mongoose.Schema.Types.ObjectId, ref: 'Chart' },
-	comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }], // Comments on the post
-	likes: { type: Number, default: 0 },
-})
-
-const Post = mongoose.model('Post', PostSchema)
 
 // ======= New Schemas for Chatrooms =======
 
@@ -132,9 +92,27 @@ const Discussion = mongoose.model('Discussion', discussionSchema)
 
 const messageSchema = new mongoose.Schema({
 	content: { type: String, required: true },
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Chart',
+		required: true,
+	},
 	discussionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Discussion' },
 	user: { type: mongoose.Schema.Types.ObjectId, ref: 'Chart' },
+	parentMessage: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Message',
+		default: null,
+	}, // For handling replies to messages
 	createdAt: { type: Date, default: Date.now },
+	likes: { type: Number, default: 0 }, // For like count
+	likedBy: [
+		{
+			userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Chart' },
+			liked: { type: Boolean }, // true for like, false for dislike
+		},
+	],
+	replies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }], // For nested replies
 })
 
 const Message = mongoose.model('Message', messageSchema)
@@ -142,8 +120,6 @@ const Message = mongoose.model('Message', messageSchema)
 // ======= Google Generative AI Setup =======
 const genAI = new GoogleGenerativeAI(process.env.API_KEY)
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
-
-// ======= Existing Routes =======
 
 // Analyze content for astrological influences
 app.post('/analyze', async (req, res) => {
@@ -266,12 +242,12 @@ app.get('/users', async (req, res) => {
 	}
 })
 
-// Fetch specific user by ID
 app.get('/user/:id', async (req, res) => {
 	const userId = req.params.id
 
 	try {
 		const user = await Chart.findOne({ id: userId })
+
 		if (!user) {
 			res.status(404).send('User not found')
 			return
@@ -280,6 +256,19 @@ app.get('/user/:id', async (req, res) => {
 	} catch (err) {
 		console.error('Error fetching user:', err)
 		res.status(500).send('Error fetching user')
+	}
+})
+
+app.get('/users/:id', async (req, res) => {
+	const userId = req.params.id
+	console.log('egdg')
+	try {
+		const user = await Chart.findOne({ id: userId })
+
+		if (!user) return res.status(404).json({ error: 'User not found' })
+		res.json({ name: user.name, _id: user._id })
+	} catch (error) {
+		res.status(500).json({ error: 'Server error' })
 	}
 })
 
@@ -387,6 +376,12 @@ app.post('/posts/:postId/comments', async (req, res) => {
 			post: post._id,
 			parentComment,
 		})
+		//if comment has parentcomment than push that comment to parentcomment.reply
+		if (parentComment) {
+			const parentCommentDoc = await Comment.findById(parentComment)
+			parentCommentDoc.replies.push(comment._id)
+			await parentCommentDoc.save()
+		}
 		await comment.save()
 
 		post.comments.push(comment._id)
@@ -403,8 +398,18 @@ app.post('/posts/:postId/comments', async (req, res) => {
 app.get('/posts/:postId/comments', async (req, res) => {
 	const { postId } = req.params
 	try {
-		const comments = await Comment.find({ post: postId }).populate('user')
-		res.status(200).json(comments)
+		// Fetch all comments for the post and populate user and replies
+		const comments = await Comment.find({ post: postId })
+			.populate('user', 'name') // Populate user details
+			.populate('replies') // Populate replies with full comment data
+
+		// Prepare the structure to return
+		const rootComments = comments.filter(
+			(comment) => !comment.parentComment
+		)
+
+		// Send the comments as response
+		res.status(200).json(rootComments)
 	} catch (err) {
 		console.error('Error fetching comments:', err)
 		res.status(500).send('Error fetching comments')
@@ -426,12 +431,11 @@ app.post('/chatrooms', async (req, res) => {
 			planets: { $all: planet, $size: planet.length },
 			sign,
 			house,
+			createdBy,
 		})
 
 		if (existingRoom) {
-			return res.status(400).json({
-				message: 'Chatroom with this conjunction already exists',
-			})
+			return res.status(400).send('Chatroom Already Exists')
 		}
 
 		const chatroom = new Chatroom({
@@ -439,6 +443,7 @@ app.post('/chatrooms', async (req, res) => {
 			sign,
 			house,
 			createdBy,
+			members: [createdBy],
 		})
 		await chatroom.save()
 		res.status(201).json(chatroom)
@@ -459,9 +464,19 @@ app.get('/chatrooms', async (req, res) => {
 	}
 })
 
+app.get('/chatrooms/:chatroomId', async (req, res) => {
+	try {
+		const { chatroomId } = req.params
+		const chatroom = await Chatroom.findById(chatroomId)
+		res.json(chatroom)
+	} catch (err) {
+		console.error('Error fetching chatrooms:', err)
+		res.status(500).send('Error fetching chatrooms')
+	}
+})
+
 app.post('/chatrooms/filter', async (req, res) => {
 	let { planet, sign, house, ObjectId } = req.body
-	console.log(planet)
 
 	try {
 		// Ensure user exists
@@ -470,14 +485,28 @@ app.post('/chatrooms/filter', async (req, res) => {
 			return res.status(404).json({ message: 'User not found' })
 		}
 
-		// Create query for conjunction
-		const query = { planets: { $all: planet, $size: planet.length } }
+		// Initialize an empty query
+		const query = {}
+
+		// If planets are provided, add conjunction condition
+		if (planet && planet.length > 0) {
+			query.planets = { $all: planet, $size: planet.length }
+		}
 
 		// Add sign or house to the query if provided
 		if (sign) query.sign = sign
 		if (house) query.house = house
 
-		const chatrooms = await Chatroom.find(query)
+		// Only add `createdBy` filter if no other filters are provided
+		if (!planet?.length && !sign && !house) {
+			query.createdBy = ObjectId
+		}
+
+		// Fetch chatrooms based on constructed query
+		const chatrooms = await Chatroom.find(query).populate(
+			'createdBy',
+			'name'
+		)
 
 		if (!chatrooms.length) {
 			return res.status(404).json({ message: 'No chatrooms found' })
@@ -500,8 +529,12 @@ app.post('/chatrooms/join', async (req, res) => {
 			return res.status(404).send('Chatroom not found')
 		}
 
-		chatroom.members.push(ObjectId)
-		await chatroom.save()
+		if (!chatroom.members.includes(ObjectId)) {
+			chatroom.members.push(ObjectId)
+			await chatroom.save()
+		} else {
+			return res.status(400).send('Member already in chatroom')
+		}
 		res.status(200).json(chatroom)
 	} catch (err) {
 		console.error('Error joining chatroom:', err)
@@ -511,11 +544,12 @@ app.post('/chatrooms/join', async (req, res) => {
 
 app.post('/chatrooms/joined', async (req, res) => {
 	const { ObjectId } = req.body
-	console.log(ObjectId)
 	try {
 		// Find chatrooms where the user is a member
 
-		const joinedChatrooms = await Chatroom.find({ members: ObjectId })
+		const joinedChatrooms = await Chatroom.find({
+			members: ObjectId,
+		}).populate('createdBy', 'name')
 		res.json(joinedChatrooms)
 	} catch (err) {
 		console.error('Error fetching joined chatrooms:', err)
@@ -526,7 +560,8 @@ app.post('/chatrooms/joined', async (req, res) => {
 // Leave a chatroom
 app.post('/chatrooms/:id/leave', async (req, res) => {
 	const chatroomId = req.params.id
-	const { userId } = req.body
+	const { ObjectId } = req.body
+	console.log(ObjectId)
 
 	try {
 		const chatroom = await Chatroom.findById(chatroomId)
@@ -535,7 +570,7 @@ app.post('/chatrooms/:id/leave', async (req, res) => {
 		}
 
 		chatroom.members = chatroom.members.filter(
-			(member) => member.toString() !== userId
+			(member) => member.toString() !== ObjectId
 		)
 		await chatroom.save()
 		res.status(200).json(chatroom)
@@ -575,7 +610,6 @@ app.get('/chatrooms/:chatroomId/messages', async (req, res) => {
 
 app.get('/chatrooms/:chatroomId/discussions', async (req, res) => {
 	const { chatroomId } = req.params
-	console.log(chatroomId)
 	const discussions = await Discussion.find({ chatroomId })
 	res.json(discussions)
 })
@@ -584,7 +618,14 @@ app.get('/chatrooms/:chatroomId/discussions', async (req, res) => {
 app.post('/chatrooms/:chatroomId/discussions', async (req, res) => {
 	const { chatroomId } = req.params
 	const { name, type, createdBy } = req.body
-	const discussion = new Discussion({ name, type, chatroomId, createdBy })
+
+	const user = await Chart.findOne({ id: createdBy })
+	const discussion = new Discussion({
+		name,
+		type,
+		chatroomId,
+		createdBy: user._id,
+	})
 	await discussion.save()
 	res.status(201).json(discussion)
 })
@@ -620,8 +661,9 @@ app.post(
 app.post('/discussions/:discussionId/messages', async (req, res) => {
 	const { discussionId } = req.params
 	const { userId, content } = req.body
+	const user = await Chart.findOne({ id: userId })
 
-	const message = new Message({ discussionId, user: userId, content })
+	const message = new Message({ discussionId, user: user._id, content })
 	await message.save()
 	res.status(201).json(message)
 })
@@ -629,8 +671,126 @@ app.post('/discussions/:discussionId/messages', async (req, res) => {
 // Fetch messages in a discussion
 app.get('/discussions/:discussionId/messages', async (req, res) => {
 	const { discussionId } = req.params
-	const messages = await Message.find({ discussionId }).populate('user')
-	res.json(messages)
+
+	try {
+		const messages = await Message.find({ discussionId })
+			.populate('user', 'name') // Populate the user field with only the name
+			.populate('replies') // Populate replies if needed
+
+		res.json(messages)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ message: 'Internal server error' })
+	}
+})
+
+app.post('/messages/:messageId/like', async (req, res) => {
+	const { messageId } = req.params
+	const { userId, like } = req.body // `like` can be true or false
+
+	try {
+		// Validate and fetch the user
+		const user = await Chart.findOne({ id: userId })
+		if (!user) {
+			return res.status(404).send('User not found')
+		}
+
+		// Fetch the message
+		const message = await Message.findById(messageId)
+		if (!message) return res.status(404).send('Message not found')
+
+		// Find if the user has already liked/disliked the message
+		const existingLikeIndex = message.likedBy.findIndex((entry) =>
+			entry.userId.equals(user._id)
+		)
+
+		if (existingLikeIndex > -1) {
+			// User has already liked/disliked
+			const existingLike = message.likedBy[existingLikeIndex]
+
+			if (existingLike.liked === like) {
+				// If the user clicks the same button again (toggle to neutral)
+				if (like) {
+					message.likes-- // Remove a "like" (subtract 1)
+				} else {
+					message.likes++ // Remove a "dislike" (add 1)
+				}
+				// Remove the entry from likedBy
+				message.likedBy.splice(existingLikeIndex, 1)
+			} else {
+				// Toggle action: change from like to dislike or vice versa
+				if (like) {
+					message.likes += 2 // Change from dislike to like (net +1)
+				} else {
+					message.likes -= 2 // Change from like to dislike (net -1)
+				}
+				existingLike.liked = like // Update the like status
+			}
+		} else {
+			// User has not liked/disliked before; add new entry if `like` is true or false
+			message.likedBy.push({ userId: user._id, liked: like })
+			if (like) {
+				message.likes++ // Like adds 1
+			} else {
+				message.likes-- // Dislike subtracts 1
+			}
+		}
+
+		// Save changes to the message
+		await message.save()
+		res.status(200).json(message)
+	} catch (err) {
+		console.error('Error updating message likes:', err)
+		res.status(500).send('Error updating message likes')
+	}
+})
+
+// Reply to a message
+app.post('/messages/:messageId/reply', async (req, res) => {
+	const { messageId } = req.params
+	const { userId, content } = req.body
+
+	const user = await Chart.findOne({ id: userId })
+	console.log(userId)
+	// const message = new Message({ discussionId, user: user._id, content })
+
+	try {
+		const parentMessage = await Message.findById(messageId)
+		if (!parentMessage) return res.status(404).send('Message not found')
+
+		const reply = new Message({
+			content,
+			user: user._id,
+			discussionId: parentMessage.discussionId,
+			parentMessage: parentMessage._id,
+		})
+
+		await reply.save()
+
+		// Add reply to the parent message's replies array
+		parentMessage.replies.push(reply._id)
+		await parentMessage.save()
+
+		res.status(201).json(reply)
+	} catch (err) {
+		console.error('Error replying to message:', err)
+		res.status(500).send('Error replying to message')
+	}
+})
+
+// Fetch replies for a message
+app.get('/messages/:messageId/replies', async (req, res) => {
+	const { messageId } = req.params
+
+	try {
+		const replies = await Message.find({
+			parentMessage: messageId,
+		}).populate('user')
+		res.status(200).json(replies)
+	} catch (err) {
+		console.error('Error fetching replies:', err)
+		res.status(500).send('Error fetching replies')
+	}
 })
 
 // ======= Existing Analyze Route (Retained) =======

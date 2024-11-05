@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { Container, Col, Row, Form, Button } from 'react-bootstrap'
 
-const Fetch = () => {
+const Fetch = ({ userId }) => {
 	const [astrologyData, setAstrologyData] = useState(null)
 	const [formData, setFormData] = useState({
-		id: 0,
+		id: userId,
 		year: 1999,
 		month: 1,
 		date: 4,
@@ -75,18 +75,18 @@ const Fetch = () => {
 					<Col xs={12} sm={10} md={8} lg={8}>
 						<Form onSubmit={handleSubmit}>
 							<Row>
-								<Col md={4}>
+								{/* <Col md={4}>
 									<Form.Group controlId="id">
 										<Form.Label>id:</Form.Label>
 										<Form.Control
-											type="number"
+											type="string"
 											name="id"
 											value={formData.id}
 											onChange={handleChange}
 											required
 										/>
 									</Form.Group>
-								</Col>
+								</Col> */}
 
 								<Col md={4}>
 									<Form.Group controlId="name">
@@ -138,8 +138,7 @@ const Fetch = () => {
 										/>
 									</Form.Group>
 								</Col>
-							</Row>
-							<Row>
+
 								<Col md={4}>
 									<Form.Group controlId="hours">
 										<Form.Label>Hours:</Form.Label>
@@ -176,8 +175,7 @@ const Fetch = () => {
 										/>
 									</Form.Group>
 								</Col>
-							</Row>
-							<Row>
+
 								<Col md={4}>
 									<Form.Group controlId="latitude">
 										<Form.Label>Latitude:</Form.Label>

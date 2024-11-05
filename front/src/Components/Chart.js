@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Col, Row, Form, Button } from 'react-bootstrap'
+import { Col, Row } from 'react-bootstrap'
 import axios from 'axios'
 
-const Chart = () => {
-	const [userId, setUserId] = useState('0')
+const Chart = ({ userId }) => {
 	const [user, setUser] = useState(null)
 	const [astrologyData, setAstrologyData] = useState(null)
 	const [clickedUserId, setClickedUserId] = useState(null)
@@ -39,11 +38,31 @@ const Chart = () => {
 		fetchAllAstrologyData()
 	}, [])
 
+	useEffect(() => {
+		const fetchUserData = async () => {
+			try {
+				const response = await axios.get(
+					`http://localhost:3333/user/${userId}`
+				)
+				if (response.data) {
+					setAstrologyData(response.data.astrologyData)
+					setUser(response.data)
+					console.log(response.data)
+				} else {
+					setAstrologyData(null)
+				}
+			} catch (error) {
+				console.error('Error fetching astrology data:', error)
+			}
+		}
+		if (userId) fetchUserData()
+	}, [userId])
+
 	const getColorForSign = (sign) => {
 		return zodiacColors[sign] || 'black'
 	}
 
-	const handlePlanetClick = async (planet, value) => {
+	const handlePlanetClick = (planet, value) => {
 		try {
 			const filteredUsers = allAstrologyData.filter(
 				(user) =>
@@ -60,28 +79,6 @@ const Chart = () => {
 		setClickedUserId(userId)
 	}
 
-	const handleFormSubmit = async (e) => {
-		e.preventDefault()
-		try {
-			const response = await axios.get(
-				`http://localhost:3333/user/${userId}`
-			)
-			if (!response.data) {
-				setAstrologyData(null)
-			} else {
-				setAstrologyData(response.data.astrologyData)
-				setUser(response.data)
-				console.log(response.data)
-			}
-		} catch (error) {
-			console.error('Error fetching astrology data:', error)
-		}
-	}
-
-	const handleInputChange = (e) => {
-		setUserId(e.target.value)
-	}
-
 	return (
 		<div className="container text-center mt-5">
 			{user && (
@@ -90,23 +87,7 @@ const Chart = () => {
 					<p>Hey, How are you? {user.name}</p>
 				</div>
 			)}
-			<Form onSubmit={handleFormSubmit} className="mb-4">
-				<Form.Group>
-					<Form.Group className="text-center">
-						<Form.Label>Enter User ID:</Form.Label>
-						<Form.Control
-							type="text"
-							placeholder="Enter user ID"
-							value={userId}
-							onChange={handleInputChange}
-							style={{ width: '200px', margin: 'auto' }}
-						/>
-					</Form.Group>
-				</Form.Group>
-				<Button variant="primary" type="submit" size="sm">
-					View Your Chart
-				</Button>
-			</Form>
+
 			<p>Users with Similar Positions:</p>
 			<div className="d-flex flex-wrap justify-content-center">
 				{usersWithSimilarPlacement.map((user, index) => (

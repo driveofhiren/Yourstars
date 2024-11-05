@@ -1,0 +1,318 @@
+body {
+	color: black;
+}
+.chatroom-filter-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+/* Main sections */
+.chatroom-title {
+	text-align: center;
+	font-size: 1.8em;
+	margin-bottom: 20px;
+}
+
+/* Flex container for joined chatrooms, your chatrooms, and chatroom creation/filter section */
+.chatroom-section,
+.create-filter-section {
+	width: 100%;
+	max-width: 800px;
+	margin-bottom: 20px;
+	background-color: #f8f9fa;
+	padding: 15px;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.chatroom-section h3,
+.create-filter-section h3 {
+	font-size: 1.5em;
+	margin-bottom: 15px;
+	text-align: center;
+}
+
+/* Chatroom list items */
+.chatroom-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px;
+	margin-bottom: 8px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	background-color: #fff;
+}
+
+/* Available chatrooms container */
+.joined-chatrooms ul {
+	list-style-type: none;
+	padding: 0;
+}
+
+.joined-chatrooms ul li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	background-color: #ffffff;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	margin-bottom: 8px;
+}
+
+/* Buttons */
+.primary-button,
+button {
+	font-size: 1em;
+	padding: 5px 10px;
+	/* color: #fff;
+	background-color: #007bff; */
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	margin: 5px 0;
+}
+
+button.primary-button:hover,
+button:hover {
+	background-color: #0056b3;
+}
+
+/* Discussion styling */
+.create-chatroom,
+.filter-chatrooms,
+.chatroom {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+.create-chatroom label,
+.filter-chatrooms label,
+.chatroom label {
+	margin-bottom: 8px;
+	width: 100%;
+	text-align: left;
+}
+input,
+select,
+button {
+	padding: 6px;
+	font-size: 0.9em;
+	margin: 0;
+}
+input,
+select {
+	width: auto;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	margin-right: 8px; /* Small gap between elements */
+}
+
+/* Discussion list */
+ul {
+	list-style: none;
+	padding: 0;
+	margin-top: 10px;
+	width: 100%;
+}
+
+ul li {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px;
+	border-radius: 5px;
+	background-color: #ffffff;
+	border: 1px solid #ddd;
+	cursor: pointer;
+}
+
+ul li:hover {
+	background-color: #f1f1f1;
+}
+.karma-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.planet {
+	position: relative;
+	text-align: center;
+} /* Discussion.css */
+.discussion-title {
+	font-size: 1.2em;
+	margin: 0;
+	color: #0056b3;
+	border-bottom: 1px solid #ddd;
+}
+.discussion {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+.message-content,
+.message-likes,
+.message-author {
+	margin: 0px;
+}
+
+/* Compact container for messages */
+.messages-container {
+	max-height: 500px;
+	overflow-y: auto;
+	padding: 10px;
+	border-radius: 6px;
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+}
+/* Individual message styling */
+.messages-container {
+	max-height: 300px;
+	overflow-y: auto;
+	padding: 10px;
+	border-radius: 6px;
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+}
+
+/* Author name styling */
+.message-author {
+	font-weight: bold;
+	font-size: 0.9em;
+	color: #00509e;
+	margin-bottom: 4px;
+}
+
+/* Compact message content styling */
+.message-content {
+	font-size: 0.95em;
+}
+
+.message-likes {
+	font-size: 0.85em;
+	color: #666;
+	margin-right: 10px; /* Add a small space between Likes and buttons */
+	display: inline;
+}
+.message-actions {
+	display: inline; /* Aligns with the likes text */
+}
+
+/* Action buttons with compact style */
+button {
+	font-size: 0.8em;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	margin: 0 2px !important;
+}
+
+.message-actions button:hover {
+	background-color: #005bb5;
+}
+
+/* Compact reply input container */
+.reply-input {
+	display: flex;
+	gap: 5px;
+}
+
+.reply-input input {
+	padding: 4px;
+	font-size: 0.9em;
+	flex: 1;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.reply-input button {
+	padding: 4px 8px;
+	font-size: 0.8em;
+}
+
+/* New message input styling */
+.new-message-container {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.new-message-input {
+	flex: 1;
+	padding: 6px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+}
+
+/* Send button styling */
+.new-message-container button {
+	background-color: #00509e;
+	color: white;
+	font-size: 0.9em;
+	padding: 6px 10px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.new-message-container button:hover {
+	background-color: #003a75;
+}
+
+/* Reply nesting style for indentation */
+.replies {
+	margin-left: 15px;
+	border-left: 2px solid #cce7ff;
+	padding-left: 8px;
+}
+
+.like-button,
+.dislike-button {
+	padding: 5px 10px;
+	margin-right: 5px;
+	border: none;
+	cursor: pointer;
+}
+
+/* Active state styles */
+.active-like {
+	background-color: #008000 !important; /* green for like */
+	color: white;
+}
+
+.active-dislike {
+	background-color: #ff0000; /* red for dislike */
+	color: white;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+@media (max-width: 768px) {
+	.chatroom-section,
+	.create-filter-section {
+		max-width: 100%;
+	}
+
+	.create-chatroom,
+	.filter-chatrooms,
+	.chatroom-item,
+	ul li {
+		flex-direction: column;
+		align-items: center;
+	}
+}
