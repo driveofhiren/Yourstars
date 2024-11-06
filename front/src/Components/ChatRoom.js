@@ -54,16 +54,20 @@ const Chatroom = ({ chatroom, userId }) => {
 				</select>
 				<button onClick={createDiscussion}>Create Discussion</button>
 
-				<ul>
+				<select
+					onChange={(e) =>
+						setSelectedDiscussion(
+							discussions.find((d) => d._id === e.target.value)
+						)
+					}
+				>
+					<option value="">Select a discussion</option>
 					{discussions.map((discussion) => (
-						<li
-							key={discussion._id}
-							onClick={() => setSelectedDiscussion(discussion)}
-						>
+						<option key={discussion._id} value={discussion._id}>
 							{discussion.name} - {discussion.type}
-						</li>
+						</option>
 					))}
-				</ul>
+				</select>
 			</div>
 			<div>
 				{selectedDiscussion && (

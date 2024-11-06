@@ -1,0 +1,58 @@
+/* Reset default margin and padding */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/* Container for the 3 divisions */
+.box {
+	display: flex;
+	justify-content: space-between;
+	/* height: 100vh; */
+}
+
+/* Left Division (Div 1) */
+.left-div {
+	width: 200px;
+	background-color: lightcoral;
+	height: 100%;
+	padding: 20px;
+	text-align: center;
+}
+
+/* Right Division (Div 3) */
+.right-div {
+	width: 200px;
+	background-color: lightblue;
+	height: 100%;
+	padding: 20px;
+	text-align: center;
+}
+
+/* Middle Divisions */
+.middle-divs {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 100%; /* Take up remaining space */
+}
+
+/* Top Division (Div 2 - Top) */
+.top-div {
+	text-align: center;
+}
+
+/* Bottom Division (Div 2 - Bottom) */
+.bottom-div {
+	background-color: lightyellow;
+	flex: 1; /* Makes it take up equal space */
+
+	text-align: center;
+}
+
+.inline-labels {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
