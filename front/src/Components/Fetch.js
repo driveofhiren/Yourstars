@@ -36,7 +36,9 @@ const Fetch = ({ userId }) => {
 		e.preventDefault()
 		try {
 			// Check if the ID already exists
-			const usersResponse = await axios.get('http://localhost:3000/users')
+			const usersResponse = await axios.get(
+				'https://yourstars-lj6b.vercel.app/users'
+			)
 			const existingUsers = usersResponse.data
 			const userExists = existingUsers.some(
 				(user) => user.id === formData.id
@@ -49,7 +51,7 @@ const Fetch = ({ userId }) => {
 
 			// Submit form data to fetch astrology data
 			const response = await axios.post(
-				'http://localhost:3000/fetchAstrologyData',
+				'https://yourstars-lj6b.vercel.app/fetchAstrologyData',
 				formData
 			)
 

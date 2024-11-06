@@ -29,7 +29,9 @@ const Chart = ({ userId }) => {
 	useEffect(() => {
 		const fetchAllAstrologyData = async () => {
 			try {
-				const response = await axios.get('http://localhost:3000/users')
+				const response = await axios.get(
+					'https://yourstars-lj6b.vercel.app/users'
+				)
 				setAllAstrologyData(response.data)
 			} catch (error) {
 				console.error('Error fetching all astrology data:', error)
@@ -42,7 +44,7 @@ const Chart = ({ userId }) => {
 		const fetchUserData = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:3000/user/${userId}`
+					`https://yourstars-lj6b.vercel.app/user/${userId}`
 				)
 				if (response.data) {
 					setAstrologyData(response.data.astrologyData)

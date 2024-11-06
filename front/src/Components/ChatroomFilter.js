@@ -47,7 +47,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchChats = async (chatroomId) => {
 		try {
 			const response = await axios.get(
-				`http://localhost:3000/chatrooms/${chatroomId}/messages`
+				`https://yourstars-lj6b.vercel.app/chatrooms/${chatroomId}/messages`
 			)
 			setChats(response.data)
 		} catch (error) {
@@ -60,7 +60,7 @@ const ChatroomFilter = ({ userId }) => {
 
 		try {
 			await axios.post(
-				`http://localhost:3000/chatrooms/${selectedChatroom._id}/messages`,
+				`https://yourstars-lj6b.vercel.app/chatrooms/${selectedChatroom._id}/messages`,
 				{
 					ObjectId,
 					content: newMessage,
@@ -81,7 +81,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchJoinedRooms = async () => {
 		try {
 			const response = await axios.post(
-				`http://localhost:3000/chatrooms/joined`,
+				`https://yourstars-lj6b.vercel.app/chatrooms/joined`,
 				{ ObjectId }
 			)
 			console.log(response.data)
@@ -94,7 +94,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchYourRooms = async () => {
 		try {
 			const response = await axios.post(
-				`http://localhost:3000/chatrooms/filter`,
+				`https://yourstars-lj6b.vercel.app/chatrooms/filter`,
 				{ ObjectId }
 			)
 			console.log(response.data)
@@ -119,7 +119,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchAstrologyData = async () => {
 		try {
 			const response = await axios.get(
-				`http://localhost:3000/user/${userId}`
+				`https://yourstars-lj6b.vercel.app/user/${userId}`
 			)
 			setAstrologyData(response.data.astrologyData[1])
 			setObjectId(response.data._id)
@@ -197,7 +197,10 @@ const ChatroomFilter = ({ userId }) => {
 				createdBy: ObjectId,
 			}
 
-			await axios.post('http://localhost:3000/chatrooms', newRoomData)
+			await axios.post(
+				'https://yourstars-lj6b.vercel.app/chatrooms',
+				newRoomData
+			)
 			alert('Chatroom created successfully!')
 			setCreateRoom({ planet: [], sign: '', house: '' })
 		} catch (err) {
@@ -232,7 +235,7 @@ const ChatroomFilter = ({ userId }) => {
 			} else if (filterBy === 'house' && house) filterData.house = house
 
 			const response = await axios.post(
-				'http://localhost:3000/chatrooms/filter',
+				'https://yourstars-lj6b.vercel.app/chatrooms/filter',
 				filterData
 			)
 			setChatrooms(response.data)
@@ -243,10 +246,13 @@ const ChatroomFilter = ({ userId }) => {
 
 	const joinChatroom = async (chatroomId) => {
 		try {
-			await axios.post('http://localhost:3000/chatrooms/join', {
-				chatroomId,
-				ObjectId,
-			})
+			await axios.post(
+				'https://yourstars-lj6b.vercel.app/chatrooms/join',
+				{
+					chatroomId,
+					ObjectId,
+				}
+			)
 			setChatrooms((prevChatrooms) => {
 				return prevChatrooms.map((room) => {
 					if (room._id === chatroomId) {
@@ -275,7 +281,7 @@ const ChatroomFilter = ({ userId }) => {
 	const leaveChatroom = async (chatroomId) => {
 		try {
 			await axios.post(
-				`http://localhost:3000/chatrooms/${chatroomId}/leave`,
+				`https://yourstars-lj6b.vercel.app/chatrooms/${chatroomId}/leave`,
 				{ ObjectId }
 			)
 			setChatrooms((prevChatrooms) => {
