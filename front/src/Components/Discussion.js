@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import './Default.css'
 
@@ -7,17 +7,27 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 	const [newMessage, setNewMessage] = useState('')
 	const [replyMessage, setReplyMessage] = useState('')
 	const [replyingTo, setReplyingTo] = useState(null)
-
 	const [chatroom, setChatroom] = useState([])
 	const [currentUserMongoId, setCurrentUserMongoId] = useState(null)
+	const newMessageInputRef = useRef(null)
+
+	// New state to manage scroll behavior
+	const [shouldScroll, setShouldScroll] = useState(false)
+	const messagesEndRef = useRef(null)
 
 	useEffect(() => {
 		fetchMessages()
-
 		fetchUserMongoId()
 		fetchChatroom()
 		console.log(creator)
 	}, [discussion._id, userId])
+
+	useEffect(() => {
+		if (shouldScroll) {
+			scrollToBottom()
+			setShouldScroll(false) // Reset scroll flag after scrolling
+		}
+	}, [messages])
 
 	const fetchMessages = async () => {
 		const response = await axios.get(
@@ -32,13 +42,12 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		)
 		setChatroom(response.data)
 	}
+
 	const fetchUserMongoId = async () => {
-		// Replace this with the actual endpoint that returns user data based on your frontend userId
 		const response = await axios.get(
 			`https://yourstars-lj6b.vercel.app/users/${userId}`
 		)
-
-		setCurrentUserMongoId(response.data._id) // Set MongoDB ObjectId to state
+		setCurrentUserMongoId(response.data._id)
 	}
 
 	const sendMessage = async () => {
@@ -48,6 +57,13 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		)
 		setMessages((prevMessages) => [...prevMessages, response.data])
 		setNewMessage('')
+		setShouldScroll(true) // Set scroll to true when sending a message
+		await fetchMessages()
+
+		// Focus back on the input box
+		if (newMessageInputRef.current) {
+			newMessageInputRef.current.focus()
+		}
 	}
 
 	const likeMessage = async (messageId, like) => {
@@ -61,6 +77,8 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 					msg._id === messageId ? response.data : msg
 				)
 			)
+			await fetchMessages()
+			// Do not set `shouldScroll` to true here, so it doesn't scroll
 		} catch (error) {
 			console.error('Error liking/disliking message:', error)
 		}
@@ -77,18 +95,21 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		setMessages((prevMessages) => [...prevMessages, response.data])
 		setReplyMessage('')
 		setReplyingTo(null)
+		// Set scroll to true when replying
+		await fetchMessages()
+	}
+
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
 	}
 
 	const renderMessages = (msgs, parentMessage = null) => {
 		return msgs
 			.filter((msg) => msg.parentMessage === parentMessage)
 			.map((msg) => {
-				// Determine user's current reaction status for styling
 				const userReaction = msg.likedBy.find(
 					(entry) => entry.userId.toString() === currentUserMongoId
 				)
-
-				// console.log(userReaction)
 
 				const isLiked = userReaction?.liked === true
 				const isDisliked = userReaction?.liked === false
@@ -160,9 +181,14 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 					{discussion.name} - {discussion.type}
 				</p>
 			</h4>
-			<div className="messages-container">{renderMessages(messages)}</div>
+			<div className="messages-container">
+				{renderMessages(messages)}
+				<p></p>
+				<div ref={messagesEndRef} />
+			</div>
 			<div className="new-message-container">
 				<input
+					ref={newMessageInputRef}
 					type="text"
 					value={newMessage}
 					onChange={(e) => setNewMessage(e.target.value)}
