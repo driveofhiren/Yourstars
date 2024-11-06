@@ -8,10 +8,10 @@ require('dotenv').config()
 
 const app = express()
 
-const PORT = process.env.PORT || 3333
+const PORT = process.env.PORT
 
 // MongoDB connection to your database
-mongoose.connect('mongodb+srv://nerih:nerih@cluster0.ubxrdbv.mongodb.net/', {
+mongoose.connect(process.env.MONGO_URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 })
@@ -118,7 +118,7 @@ const messageSchema = new mongoose.Schema({
 const Message = mongoose.model('Message', messageSchema)
 
 // ======= Google Generative AI Setup =======
-const genAI = new GoogleGenerativeAI(process.env.API_KEY)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
 // Analyze content for astrological influences
@@ -190,7 +190,7 @@ app.post('/fetchAstrologyData', async (req, res) => {
 		url: 'https://json.freeastrologyapi.com/planets',
 		headers: {
 			'Content-Type': 'application/json',
-			'x-api-key': '6Mf2FeRZFm2uNZxnyJ6bC9TBZ57iQlnQaGzArQsB',
+			'x-api-key': process.env.ASTROLOGY_API_KEY,
 		},
 		body: JSON.stringify(requestData),
 	}
