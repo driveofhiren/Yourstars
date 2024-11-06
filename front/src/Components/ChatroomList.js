@@ -38,7 +38,7 @@ const ChatroomList = ({ chatrooms, joinChatroom, leaveChatroom, ObjectId }) => {
 					})}
 				</ul>
 			) : (
-				<p>No chatrooms found</p>
+				<p>Filter more chatrooms!</p>
 			)}
 		</div>
 	)

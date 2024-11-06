@@ -14,7 +14,7 @@ const modalStyles = {
 		marginRight: '-50%',
 		transform: 'translate(-50%, -50%)',
 		width: '100%',
-		maxWidth: '800px',
+		maxWidth: '90%',
 		maxHeight: 'auto',
 		// overflowY: 'auto',
 		padding: '20px',
@@ -332,8 +332,8 @@ const ChatroomFilter = ({ userId }) => {
 										key={chatroom._id}
 										className="chatroom-item"
 									>
-										{chatroom.planets.join(', ')} Sign :{' '}
-										{chatroom.sign} House: {chatroom.house}{' '}
+										{chatroom.planets.join(', ')} S :{' '}
+										{chatroom.sign} H: {chatroom.house}{' '}
 										{isMember ? (
 											<button
 												onClick={() =>
@@ -367,9 +367,10 @@ const ChatroomFilter = ({ userId }) => {
 						leaveChatroom={leaveChatroom}
 						ObjectId={ObjectId}
 					/>
-					<h3>Joined Chatrooms</h3>
+
 					{joinedChatrooms.length > 0 ? (
 						<div className="joined-chatrooms bottom-div">
+							<h3>Joined Chatrooms</h3>
 							{joinedChatrooms.map((chatroom) => (
 								<div
 									key={chatroom._id}

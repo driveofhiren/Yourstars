@@ -14,16 +14,17 @@
 
 /* Left Division (Div 1) */
 .left-div {
-	width: 200px;
+	/* width: 200px; */
+	width: 20%;
 	background-color: lightcoral;
 	height: 100%;
-	padding: 20px;
 	text-align: center;
 }
 
 /* Right Division (Div 3) */
 .right-div {
-	width: 200px;
+	/* width: 200px; */
+	width: 16.66%;
 	background-color: lightblue;
 	height: 100%;
 	padding: 20px;
@@ -32,9 +33,10 @@
 
 /* Middle Divisions */
 .middle-divs {
-	display: flex;
+	/* width: 16.66%; */
+	/* display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	justify-content: space-between; */
 	width: 100%; /* Take up remaining space */
 }
 
@@ -45,7 +47,6 @@
 
 /* Bottom Division (Div 2 - Bottom) */
 .bottom-div {
-	background-color: lightyellow;
 	flex: 1; /* Makes it take up equal space */
 
 	text-align: center;

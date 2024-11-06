@@ -36,7 +36,7 @@ const Chatroom = ({ chatroom, userId }) => {
 
 	return (
 		<div>
-			<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+			<div>
 				<input
 					placeholder="Discussion Name"
 					value={newDiscussionName}
