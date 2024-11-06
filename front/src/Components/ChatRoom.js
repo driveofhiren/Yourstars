@@ -11,7 +11,7 @@ const Chatroom = ({ chatroom, userId }) => {
 	useEffect(() => {
 		const fetchDiscussions = async () => {
 			const response = await axios.get(
-				`http://localhost:3333/chatrooms/${chatroom._id}/discussions`
+				`http://localhost:3000/chatrooms/${chatroom._id}/discussions`
 			)
 			console.log(userId)
 			setDiscussions(response.data)
@@ -22,7 +22,7 @@ const Chatroom = ({ chatroom, userId }) => {
 
 	const createDiscussion = async () => {
 		const response = await axios.post(
-			`http://localhost:3333/chatrooms/${chatroom._id}/discussions`,
+			`http://localhost:3000/chatrooms/${chatroom._id}/discussions`,
 			{
 				name: newDiscussionName,
 				type: newDiscussionType,

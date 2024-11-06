@@ -47,7 +47,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchChats = async (chatroomId) => {
 		try {
 			const response = await axios.get(
-				`http://localhost:3333/chatrooms/${chatroomId}/messages`
+				`http://localhost:3000/chatrooms/${chatroomId}/messages`
 			)
 			setChats(response.data)
 		} catch (error) {
@@ -60,7 +60,7 @@ const ChatroomFilter = ({ userId }) => {
 
 		try {
 			await axios.post(
-				`http://localhost:3333/chatrooms/${selectedChatroom._id}/messages`,
+				`http://localhost:3000/chatrooms/${selectedChatroom._id}/messages`,
 				{
 					ObjectId,
 					content: newMessage,
@@ -81,7 +81,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchJoinedRooms = async () => {
 		try {
 			const response = await axios.post(
-				`http://localhost:3333/chatrooms/joined`,
+				`http://localhost:3000/chatrooms/joined`,
 				{ ObjectId }
 			)
 			console.log(response.data)
@@ -94,7 +94,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchYourRooms = async () => {
 		try {
 			const response = await axios.post(
-				`http://localhost:3333/chatrooms/filter`,
+				`http://localhost:3000/chatrooms/filter`,
 				{ ObjectId }
 			)
 			console.log(response.data)
@@ -119,7 +119,7 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchAstrologyData = async () => {
 		try {
 			const response = await axios.get(
-				`http://localhost:3333/user/${userId}`
+				`http://localhost:3000/user/${userId}`
 			)
 			setAstrologyData(response.data.astrologyData[1])
 			setObjectId(response.data._id)
@@ -197,7 +197,7 @@ const ChatroomFilter = ({ userId }) => {
 				createdBy: ObjectId,
 			}
 
-			await axios.post('http://localhost:3333/chatrooms', newRoomData)
+			await axios.post('http://localhost:3000/chatrooms', newRoomData)
 			alert('Chatroom created successfully!')
 			setCreateRoom({ planet: [], sign: '', house: '' })
 		} catch (err) {
@@ -232,7 +232,7 @@ const ChatroomFilter = ({ userId }) => {
 			} else if (filterBy === 'house' && house) filterData.house = house
 
 			const response = await axios.post(
-				'http://localhost:3333/chatrooms/filter',
+				'http://localhost:3000/chatrooms/filter',
 				filterData
 			)
 			setChatrooms(response.data)
@@ -243,7 +243,7 @@ const ChatroomFilter = ({ userId }) => {
 
 	const joinChatroom = async (chatroomId) => {
 		try {
-			await axios.post('http://localhost:3333/chatrooms/join', {
+			await axios.post('http://localhost:3000/chatrooms/join', {
 				chatroomId,
 				ObjectId,
 			})
@@ -275,7 +275,7 @@ const ChatroomFilter = ({ userId }) => {
 	const leaveChatroom = async (chatroomId) => {
 		try {
 			await axios.post(
-				`http://localhost:3333/chatrooms/${chatroomId}/leave`,
+				`http://localhost:3000/chatrooms/${chatroomId}/leave`,
 				{ ObjectId }
 			)
 			setChatrooms((prevChatrooms) => {

@@ -21,21 +21,21 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 
 	const fetchMessages = async () => {
 		const response = await axios.get(
-			`http://localhost:3333/discussions/${discussion._id}/messages`
+			`http://localhost:3000/discussions/${discussion._id}/messages`
 		)
 		setMessages(response.data)
 	}
 
 	const fetchChatroom = async () => {
 		const response = await axios.get(
-			`http://localhost:3333/chatrooms/${chatroomId}`
+			`http://localhost:3000/chatrooms/${chatroomId}`
 		)
 		setChatroom(response.data)
 	}
 	const fetchUserMongoId = async () => {
 		// Replace this with the actual endpoint that returns user data based on your frontend userId
 		const response = await axios.get(
-			`http://localhost:3333/users/${userId}`
+			`http://localhost:3000/users/${userId}`
 		)
 
 		setCurrentUserMongoId(response.data._id) // Set MongoDB ObjectId to state
@@ -43,7 +43,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 
 	const sendMessage = async () => {
 		const response = await axios.post(
-			`http://localhost:3333/discussions/${discussion._id}/messages`,
+			`http://localhost:3000/discussions/${discussion._id}/messages`,
 			{ userId, content: newMessage }
 		)
 		setMessages((prevMessages) => [...prevMessages, response.data])
@@ -53,7 +53,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 	const likeMessage = async (messageId, like) => {
 		try {
 			const response = await axios.post(
-				`http://localhost:3333/messages/${messageId}/like`,
+				`http://localhost:3000/messages/${messageId}/like`,
 				{ userId, like }
 			)
 			setMessages((prevMessages) =>
@@ -68,7 +68,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 
 	const replyToMessage = async () => {
 		const response = await axios.post(
-			`http://localhost:3333/messages/${replyingTo}/reply`,
+			`http://localhost:3000/messages/${replyingTo}/reply`,
 			{
 				userId,
 				content: replyMessage,

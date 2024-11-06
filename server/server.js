@@ -122,6 +122,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
 // Analyze content for astrological influences
+
 app.post('/analyze', async (req, res) => {
 	const { content } = req.body
 
@@ -795,7 +796,9 @@ app.get('/messages/:messageId/replies', async (req, res) => {
 
 // ======= Existing Analyze Route (Retained) =======
 // (Note: Already included above)
-
+app.get('*', (req, res) => {
+	res.send('Hello from server.js!')
+})
 // ======= Server Setup =======
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`)

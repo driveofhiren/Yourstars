@@ -10,6 +10,7 @@ const Login = ({ onLogin }) => {
 	useEffect(() => {
 		// Listen for auth state changes
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			console.log(user)
 			setUser(user)
 			onLogin(user) // Pass the authenticated user to the parent
 		})
@@ -18,13 +19,13 @@ const Login = ({ onLogin }) => {
 
 	const handleLogin = () => {
 		// Use redirect on mobile
-		signInWithRedirect(auth, googleProvider).catch((error) => {
-			console.error('Error during sign-in (redirect):', error)
-		})
-		// Use popup on desktop
-		// signInWithPopup(auth, googleProvider).catch((error) => {
-		// 	console.error('Error during sign-in (popup):', error)
+		// signInWithRedirect(auth, googleProvider).catch((error) => {
+		// 	console.error('Error during sign-in (redirect):', error)
 		// })
+		// Use popup on desktop
+		signInWithPopup(auth, googleProvider).catch((error) => {
+			console.error('Error during sign-in (popup):', error)
+		})
 	}
 
 	const handleLogout = () => {
