@@ -115,12 +115,16 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 				const isDisliked = userReaction?.liked === false
 
 				return (
-					<div key={msg._id} className="message-container">
+					<div
+						key={msg._id}
+						className="message-container scroll-smooth"
+					>
 						<div className="message">
 							<p className="message-author">{msg.user.name}</p>
 							<p className="message-content">{msg.content}</p>
-							<p className="message-likes">Likes: {msg.likes}</p>
+
 							<div className="message-actions">
+								Likes: {msg.likes}
 								<button
 									className={`like-button ${
 										isLiked ? 'active-like' : ''
@@ -158,7 +162,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 								</button>
 							</div>
 						)}
-						<div className="replies">
+						<div className="replies scroll-smooth">
 							{renderMessages(msgs, msg._id)}
 						</div>
 					</div>

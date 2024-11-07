@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Discussion from './Discussion'
+import './Layout.css'
 
-const Chatroom = ({ chatroom, userId }) => {
+const Chatroom = ({ chatroom, userId, closeModal }) => {
 	const [discussions, setDiscussions] = useState([])
 	const [selectedDiscussion, setSelectedDiscussion] = useState(null)
 	const [newDiscussionName, setNewDiscussionName] = useState('')
@@ -21,6 +22,7 @@ const Chatroom = ({ chatroom, userId }) => {
 	}, [chatroom])
 
 	const createDiscussion = async () => {
+		if (!newDiscussionName.trim()) return // Ensure name is not empty or whitespace
 		const response = await axios.post(
 			`https://yourstars-lj6b.vercel.app/chatrooms/${chatroom._id}/discussions`,
 			{
@@ -36,23 +38,31 @@ const Chatroom = ({ chatroom, userId }) => {
 
 	return (
 		<div>
-			<div>
+			<div className="create-discussion">
 				<input
 					placeholder="Discussion Name"
 					value={newDiscussionName}
 					onChange={(e) => setNewDiscussionName(e.target.value)}
-					style={{ width: '150px' }}
 				/>
+				<div>
+					<button
+						onClick={createDiscussion}
+						disabled={!newDiscussionName.trim()}
+					>
+						Create Discussion
+					</button>
+					<button onClick={closeModal} className="close-button">
+						Close
+					</button>
+				</div>
 				<select
 					value={newDiscussionType}
 					onChange={(e) => setNewDiscussionType(e.target.value)}
-					style={{ width: '100px' }}
 				>
 					<option value="General">General</option>
 					<option value="Question">Question</option>
 					<option value="Debate">Debate</option>
 				</select>
-				<button onClick={createDiscussion}>Create Discussion</button>
 
 				<select
 					onChange={(e) =>
@@ -69,6 +79,7 @@ const Chatroom = ({ chatroom, userId }) => {
 					))}
 				</select>
 			</div>
+
 			<div>
 				{selectedDiscussion && (
 					<Discussion

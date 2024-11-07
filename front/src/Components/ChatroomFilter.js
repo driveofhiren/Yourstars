@@ -315,11 +315,10 @@ const ChatroomFilter = ({ userId }) => {
 	}
 	return (
 		<div className="chatroom-filter-container">
-			<h2 className="chatroom-title">Astrological Chatrooms</h2>
 			<div className="box">
 				{/* your Chatrooms */}
 				<div className="chatroom-section left-div">
-					<h3>Your Chatrooms</h3>
+					<h6>Your Chatrooms</h6>
 					{YourRooms.length > 0 ? (
 						<div className="joined-chatrooms">
 							{YourRooms.map((chatroom) => {
@@ -370,25 +369,30 @@ const ChatroomFilter = ({ userId }) => {
 
 					{joinedChatrooms.length > 0 ? (
 						<div className="joined-chatrooms bottom-div">
-							<h3>Joined Chatrooms</h3>
-							{joinedChatrooms.map((chatroom) => (
-								<div
-									key={chatroom._id}
-									className="chatroom-item"
-									onClick={() => selectChatroom(chatroom)}
-								>
-									{chatroom.planets.join(', ')} Sign :{' '}
-									{chatroom.sign} House: {chatroom.house} by{' '}
-									{chatroom.createdBy.name}
-									<button
-										onClick={() =>
-											leaveChatroom(chatroom._id)
-										}
+							<h5>
+								<p>Joined Chatrooms</p>
+							</h5>
+							<div className="chatroom-grid">
+								{joinedChatrooms.map((chatroom) => (
+									<div
+										key={chatroom._id}
+										className="chatroom-item"
+										onClick={() => selectChatroom(chatroom)}
 									>
-										Leave
-									</button>
-								</div>
-							))}
+										{chatroom.planets.join(', ')} Sign :{' '}
+										{chatroom.sign} House: {chatroom.house}{' '}
+										by {chatroom.createdBy.name}
+										<button
+											onClick={(e) => {
+												e.stopPropagation() // Prevent click on parent
+												leaveChatroom(chatroom._id)
+											}}
+										>
+											Leave
+										</button>
+									</div>
+								))}
+							</div>
 						</div>
 					) : (
 						<p className="empty-message">
@@ -400,14 +404,13 @@ const ChatroomFilter = ({ userId }) => {
 				<div className="create-filter-section right-div">
 					<div className="create-chatroom">
 						<label>
-							Research
 							<select
 								value={createRoom.planet}
 								onChange={(e) =>
 									handleCreatePlanetChange(e.target.value)
 								}
 							>
-								<option value="">Select Conjunction</option>
+								<option value="">Choose Placement</option>
 								{Object.entries(conjunctions).map(
 									([key, planets]) => (
 										<option
@@ -431,14 +434,13 @@ const ChatroomFilter = ({ userId }) => {
 
 					<div className="filter-chatrooms">
 						<label>
-							Search room
 							<select
 								value={filterRoom.planet.join(', ')}
 								onChange={(e) =>
 									handleFilterPlanetChange(e.target.value)
 								}
 							>
-								<option value="">Select Conjunction</option>
+								<option value="">Search room</option>
 								{Object.entries(conjunctions).map(
 									([key, planets]) => (
 										<option
@@ -465,15 +467,15 @@ const ChatroomFilter = ({ userId }) => {
 									<option value="house">House</option>
 								</select>
 								{filterRoom.filterBy !== 'house' && (
-									<p className="inline-label">
+									<div className="inline-label">
 										Sign {filterRoom.sign}
-									</p>
+									</div>
 								)}
 
 								{filterRoom.filterBy !== 'sign' && (
-									<p className="inline-label">
+									<div className="inline-label">
 										House {filterRoom.house}
-									</p>
+									</div>
 								)}
 							</div>
 						</label>
@@ -493,14 +495,12 @@ const ChatroomFilter = ({ userId }) => {
 					style={modalStyles}
 					contentLabel="Chatroom"
 				>
-					<button onClick={closeModal} className="close-button">
-						Close
-					</button>
 					{selectedChatroom && (
 						<Chatroom
 							chatroom={selectedChatroom}
 							userId={userId}
 							chats={chats}
+							closeModal={closeModal}
 							newMessage={newMessage}
 							setNewMessage={setNewMessage}
 							sendMessage={sendMessage}

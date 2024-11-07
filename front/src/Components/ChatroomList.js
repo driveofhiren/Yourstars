@@ -2,10 +2,10 @@ import React from 'react'
 
 const ChatroomList = ({ chatrooms, joinChatroom, leaveChatroom, ObjectId }) => {
 	return (
-		<div className="top-div">
+		<div className=" top-div">
+			<p>Search Results</p>
 			{chatrooms.length > 0 ? (
-				<ul>
-					<p>Search Results</p>
+				<ul className="chatroom-grid">
 					{chatrooms.map((chatroom) => {
 						// Check if the user is a member of the chatroom
 						const isMember = chatroom.members.includes(ObjectId)
