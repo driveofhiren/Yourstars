@@ -61,6 +61,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 			`https://yourstars-lj6b.vercel.app/discussions/${discussion._id}/messages`,
 			{ userId, content: newMessage }
 		)
+		console.log(response)
 		setMessages((prevMessages) => [...prevMessages, response.data])
 		setNewMessage('')
 		setShouldScroll(true) // Set scroll to true when sending a message
@@ -224,7 +225,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 				/>
 				<button
 					className="send-button"
-					Click={sendMessage}
+					onClick={sendMessage}
 					disabled={!newMessage.trim()}
 				>
 					Send
