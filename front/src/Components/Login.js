@@ -1,28 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { auth, googleProvider, signOut, onAuthStateChanged } from './Firebase'
 import { signInWithPopup, signInWithRedirect } from 'firebase/auth'
+import './Default.css'
 
 const Login = ({ onLogin }) => {
 	const [user, setUser] = useState(null)
 
-	// Detect mobile devices
-
 	useEffect(() => {
-		// Listen for auth state changes
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			console.log(user)
 			setUser(user)
-			onLogin(user) // Pass the authenticated user to the parent
+			onLogin(user)
 		})
 		return unsubscribe
 	}, [onLogin])
 
 	const handleLogin = () => {
-		// Use redirect on mobile
-		// signInWithRedirect(auth, googleProvider).catch((error) => {
-		// 	console.error('Error during sign-in (redirect):', error)
-		// })
-		// Use popup on desktop
 		signInWithPopup(auth, googleProvider).catch((error) => {
 			console.error('Error during sign-in (popup):', error)
 		})
@@ -37,14 +30,20 @@ const Login = ({ onLogin }) => {
 	}
 
 	return (
-		<div>
+		<div className="login-container">
 			{user ? (
-				<div>
-					<h2>Welcome, {user.displayName}</h2>
-					<button onClick={handleLogout}>Logout</button>
+				<div className="welcome-container">
+					<h2 className="welcome-message">
+						Welcome, {user.displayName}!
+					</h2>
+					<button onClick={handleLogout} className="logout-button">
+						Logout
+					</button>
 				</div>
 			) : (
-				<button onClick={handleLogin}>Login with Google</button>
+				<button onClick={handleLogin} className="login-button">
+					Login with Google
+				</button>
 			)}
 		</div>
 	)

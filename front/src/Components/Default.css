@@ -24,9 +24,40 @@ ul {
 	margin-top: 10px;
 	width: 100%;
 }
+.custom-navbar {
+	background-color: #212529 !important; /* Darker shade for navbar */
+	padding: 10px 20px;
+}
 
-p {
-	color: white;
+/* Brand Name Style */
+.brand-name {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: #f8f9fa !important; /* Light text color */
+}
+
+/* Link Style */
+.nav-link {
+	color: #f8f9fa !important; /* Light text color for links */
+	font-size: 1rem;
+	padding: 8px 15px;
+	transition: color 0.2s ease-in-out;
+}
+.login-link {
+	color: #80deea !important;
+	background-color: #1f3569;
+}
+/* Link Hover Style */
+.nav-link:hover {
+	color: #00bcd4 !important; /* Light cyan on hover */
+	
+}
+
+
+/* Specific Style for Logout Link */
+.logout-link {
+	color: #ff5722 !important; /* Different color for logout */
+	font-weight: bold;
 }
 
 ul li {

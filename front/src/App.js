@@ -9,7 +9,6 @@ import Chart from './Components/Chart'
 import Profile from './Components/Profile'
 import PostForm from './Components/PostForm'
 import ChatroomFilter from './Components/ChatroomFilter'
-import Login from './Components/Login'
 import { auth } from './Components/Firebase'
 
 function App() {
@@ -23,6 +22,7 @@ function App() {
 		try {
 			await signOut(auth)
 			setUser(null)
+			// Redirect to home page after logout
 		} catch (error) {
 			console.error('Error during sign-out:', error)
 		}
@@ -32,31 +32,51 @@ function App() {
 		<Router>
 			<Navigation user={user} onLogout={handleLogout} />
 			<Routes>
-				<Route path="/" element={<Home />} />
+				<Route
+					path="/"
+					element={
+						<Home
+							user={user}
+							onLogin={handleLogin}
+							onLogout={handleLogout}
+						/>
+					}
+				/>
 				<Route
 					path="/fetch"
 					element={
 						user ? (
 							<Fetch userId={user?.uid} />
 						) : (
-							<Login onLogin={setUser} />
+							<Home onLogin={setUser} />
 						)
 					}
 				/>
-				<Route path="/chart" element={<Chart userId={user?.uid} />} />
-				<Route path="/user" element={<Profile />} />
+				<Route
+					path="/chart"
+					element={
+						user ? (
+							<Chart userId={user?.uid} />
+						) : (
+							<Home onLogin={setUser} />
+						)
+					}
+				/>
+				<Route
+					path="/user"
+					element={user ? <Profile /> : <Home onLogin={setUser} />}
+				/>
 				<Route
 					path="/postForm"
-					element={user ? <PostForm /> : <Login onLogin={setUser} />}
+					element={user ? <PostForm /> : <Home onLogin={setUser} />}
 				/>
-				<Route path="/Login" element={<Login onLogin={setUser} />} />
 				<Route
-					path="/ChatroomFilter"
+					path="/Chatrooms"
 					element={
 						user ? (
 							<ChatroomFilter userId={user?.uid} />
 						) : (
-							<Login onLogin={setUser} />
+							<Home onLogin={setUser} />
 						)
 					}
 				/>

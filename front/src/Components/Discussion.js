@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import './Default.css'
+import './Layout.css'
 
 const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 	const [messages, setMessages] = useState([])
@@ -15,13 +16,14 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 	const [shouldScroll, setShouldScroll] = useState(false)
 	const messagesEndRef = useRef(null)
 
+	// Fetch initial data
 	useEffect(() => {
 		fetchMessages()
 		fetchUserMongoId()
 		fetchChatroom()
-		console.log(creator)
 	}, [discussion._id, userId])
 
+	// Scroll to bottom whenever new messages are added
 	useEffect(() => {
 		if (shouldScroll) {
 			scrollToBottom()
@@ -29,6 +31,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		}
 	}, [messages])
 
+	// Fetch messages from the server
 	const fetchMessages = async () => {
 		const response = await axios.get(
 			`https://yourstars-lj6b.vercel.app/discussions/${discussion._id}/messages`
@@ -36,6 +39,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		setMessages(response.data)
 	}
 
+	// Fetch chatroom details
 	const fetchChatroom = async () => {
 		const response = await axios.get(
 			`https://yourstars-lj6b.vercel.app/chatrooms/${chatroomId}`
@@ -43,6 +47,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		setChatroom(response.data)
 	}
 
+	// Fetch current user MongoDB ID
 	const fetchUserMongoId = async () => {
 		const response = await axios.get(
 			`https://yourstars-lj6b.vercel.app/users/${userId}`
@@ -50,6 +55,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		setCurrentUserMongoId(response.data._id)
 	}
 
+	// Send a new message
 	const sendMessage = async () => {
 		const response = await axios.post(
 			`https://yourstars-lj6b.vercel.app/discussions/${discussion._id}/messages`,
@@ -66,6 +72,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 		}
 	}
 
+	// Like or dislike a message
 	const likeMessage = async (messageId, like) => {
 		try {
 			const response = await axios.post(
@@ -78,31 +85,29 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 				)
 			)
 			await fetchMessages()
-			// Do not set `shouldScroll` to true here, so it doesn't scroll
 		} catch (error) {
 			console.error('Error liking/disliking message:', error)
 		}
 	}
 
+	// Reply to a specific message
 	const replyToMessage = async () => {
 		const response = await axios.post(
 			`https://yourstars-lj6b.vercel.app/messages/${replyingTo}/reply`,
-			{
-				userId,
-				content: replyMessage,
-			}
+			{ userId, content: replyMessage }
 		)
 		setMessages((prevMessages) => [...prevMessages, response.data])
 		setReplyMessage('')
 		setReplyingTo(null)
-		// Set scroll to true when replying
 		await fetchMessages()
 	}
 
+	// Scroll to the bottom of the messages container
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
 	}
 
+	// Render the messages and handle replies
 	const renderMessages = (msgs, parentMessage = null) => {
 		return msgs
 			.filter((msg) => msg.parentMessage === parentMessage)
@@ -141,7 +146,10 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 								>
 									Dislike
 								</button>
-								<button onClick={() => setReplyingTo(msg._id)}>
+								<button
+									className="reply-button"
+									onClick={() => setReplyingTo(msg._id)}
+								>
 									Reply
 								</button>
 							</div>
@@ -156,12 +164,19 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 									}
 									placeholder="Reply Message"
 								/>
-								<button onClick={replyToMessage}>Reply</button>
+								<button
+									className="reply-button"
+									onClick={replyToMessage}
+									disabled={!replyMessage.trim()} // Disable button when replyMessage is empty
+								>
+									Reply
+								</button>
 								<button onClick={() => setReplyingTo(null)}>
 									Cancel
 								</button>
 							</div>
 						)}
+
 						<div className="replies scroll-smooth">
 							{renderMessages(msgs, msg._id)}
 						</div>
@@ -173,18 +188,25 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 	return (
 		<div className="discussion">
 			<h4 className="discussion-title">
-				{Array.isArray(chatroom.planets) && chatroom.planets.length > 0
-					? chatroom.planets.join(' ')
-					: ''}
-				{` `}
-				House : {chatroom.house} {` `}
-				Sign : {chatroom.sign}
-				{` `}
-				Created By : {creator}
-				<p>
-					{discussion.name} - {discussion.type}
-				</p>
+				<span className="planets">
+					{Array.isArray(chatroom.planets) &&
+					chatroom.planets.length > 0
+						? chatroom.planets.join(' ')
+						: ''}
+				</span>
+
+				<span className="house-sign">House : {chatroom.house}</span>
+
+				<span className="house-sign">Sign : {chatroom.sign}</span>
+
+				<span className="creator">Created By : {creator}</span>
+
+				<span className="discussion-info">
+					{discussion.name} -{' '}
+					<span className="discussion-type">{discussion.type}</span>
+				</span>
 			</h4>
+
 			<div className="messages-container">
 				{renderMessages(messages)}
 				<p></p>
@@ -195,11 +217,18 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 					ref={newMessageInputRef}
 					type="text"
 					value={newMessage}
+					// Disable Send button when input is empty
 					onChange={(e) => setNewMessage(e.target.value)}
 					placeholder="New Message"
 					className="new-message-input"
 				/>
-				<button onClick={sendMessage}>Send</button>
+				<button
+					className="send-button"
+					Click={sendMessage}
+					disabled={!newMessage.trim()}
+				>
+					Send
+				</button>
 			</div>
 		</div>
 	)

@@ -13,6 +13,7 @@ const modalStyles = {
 		bottom: 'auto',
 		marginRight: '-50%',
 		transform: 'translate(-50%, -50%)',
+		background: 'lightslategrey',
 		width: '100%',
 		maxWidth: '90%',
 		maxHeight: 'auto',
@@ -202,7 +203,7 @@ const ChatroomFilter = ({ userId }) => {
 				'https://yourstars-lj6b.vercel.app/chatrooms',
 				newRoomData
 			)
-			alert('Chatroom created successfully!')
+			// alert('Chatroom created successfully!')
 			setCreateRoom({ planet: [], sign: '', house: '' })
 		} catch (err) {
 			console.error('Error creating chatroom', err)
@@ -270,7 +271,7 @@ const ChatroomFilter = ({ userId }) => {
 				chatrooms.find((room) => room._id === chatroomId)
 			)
 			await fetchChats(chatroomId)
-			alert('Joined chatroom successfully!')
+			// alert('Joined chatroom successfully!')
 		} catch (err) {
 			console.error('Error joining chatroom', err)
 			alert(err.response.data)
@@ -301,7 +302,7 @@ const ChatroomFilter = ({ userId }) => {
 				})
 			})
 			// Optionally, refresh the list of chatrooms or update state
-			alert('You have left the chatroom')
+			// alert('You have left the chatroom')
 		} catch (error) {
 			console.error('Error leaving chatroom:', error)
 			alert('Failed to leave the chatroom')

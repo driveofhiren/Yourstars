@@ -1,41 +1,41 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Navbar, Nav } from 'react-bootstrap'
-import handleLogout from './Login'
+import './Default.css' // Import CSS styles
 
 const Navigation = ({ user, onLogout }) => {
-	console.log(user)
 	return (
-		<Navbar bg="dark" variant="dark" expand="lg">
-			<Navbar.Brand as={Link} to="/">
+		<Navbar bg="dark" variant="dark" expand="lg" className="custom-navbar">
+			<Navbar.Brand as={Link} to="/" className="brand-name">
 				YourStars
 			</Navbar.Brand>
 			<Navbar.Toggle aria-controls="basic-navbar-nav" />
 			<Navbar.Collapse id="basic-navbar-nav">
-				<Nav className="mr-auto">
-					{user ? (
+				<Nav className="ml-auto">
+					{user && (
 						<>
-							<Nav.Link as={Link} to="/fetch">
-								Load your Chart
+							<Nav.Link
+								as={Link}
+								to="/fetch"
+								className="nav-link"
+							>
+								Load Your Chart
 							</Nav.Link>
-							<Nav.Link as={Link} to="/ChatroomFilter">
+							<Nav.Link
+								as={Link}
+								to="/Chatrooms"
+								className="nav-link"
+							>
 								Chatroom
-							</Nav.Link>
-							<Nav.Link as={Link} to="/chart">
-								Chart
 							</Nav.Link>
 							<Nav.Link
 								onClick={onLogout}
-								style={{ cursor: 'pointer' }}
+								className="nav-link logout-link"
+								style={{ cursor: 'pointer', color: '#ff6666' }}
 							>
 								Logout
-							</Nav.Link>{' '}
-							{/* Logout button */}
+							</Nav.Link>
 						</>
-					) : (
-						<Nav.Link as={Link} to="/Login">
-							Log in
-						</Nav.Link>
 					)}
 				</Nav>
 			</Navbar.Collapse>
