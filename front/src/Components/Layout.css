@@ -294,7 +294,7 @@ button:hover {
 
 .house-sign {
 	font-size: small;
-	color: #323232;
+	color: #323232 !;
 	margin-left: 10px;
 }
 
@@ -322,9 +322,7 @@ button:hover {
 	border-radius: 8px;
 	font-size: small;
 }
-.discussion span {
-	color: aliceblue;
-}
+
 .message {
 	background-color: #cce7ff;
 	border-radius: 8px;

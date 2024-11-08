@@ -480,7 +480,7 @@ const ChatroomFilter = ({ userId }) => {
 															', '
 														)}
 													</span>
-													<span className="chatroom-creator">
+													<span className="chatroom-member-count">
 														by{' '}
 														{
 															chatroom.createdBy
@@ -552,7 +552,7 @@ const ChatroomFilter = ({ userId }) => {
 														', '
 													)}
 												</span>
-												<span className="chatroom-creator">
+												<span className="chatroom-member-count">
 													by {chatroom.createdBy.name}
 												</span>
 											</div>

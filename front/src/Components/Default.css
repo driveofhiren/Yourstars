@@ -7,7 +7,7 @@ input,
 select,
 button {
 	padding: 6px;
-	font-size: 0.9em;
+	font-size: small;
 	margin: 0;
 }
 input,

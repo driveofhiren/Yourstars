@@ -11,6 +11,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 	const [chatroom, setChatroom] = useState([])
 	const [currentUserMongoId, setCurrentUserMongoId] = useState(null)
 	const newMessageInputRef = useRef(null)
+	const replyInputRef = useRef(null) // New ref for reply input
 
 	// New state to manage scroll behavior
 	const [shouldScroll, setShouldScroll] = useState(false)
@@ -30,6 +31,13 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 			setShouldScroll(false) // Reset scroll flag after scrolling
 		}
 	}, [messages])
+
+	// Focus on the reply input when 'replyingTo' is updated
+	useEffect(() => {
+		if (replyingTo && replyInputRef.current) {
+			replyInputRef.current.focus()
+		}
+	}, [replyingTo])
 
 	// Fetch messages from the server
 	const fetchMessages = async () => {
@@ -164,6 +172,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 										setReplyMessage(e.target.value)
 									}
 									placeholder="Reply Message"
+									ref={replyInputRef} // Set ref to reply input
 								/>
 								<button
 									className="reply-button"

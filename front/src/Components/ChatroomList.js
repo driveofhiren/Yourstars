@@ -36,6 +36,10 @@ const ChatroomList = ({
 										<span className="chatroom-planets">
 											{chatroom.planets.join(', ')}
 										</span>
+
+										<span className="chatroom-member-count">
+											by {chatroom.createdBy.name}
+										</span>
 									</div>
 
 									<span className="chatroom-sign-house">
