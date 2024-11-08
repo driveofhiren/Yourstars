@@ -7,7 +7,7 @@ import './Layout.css'
 const Fetch = ({ userId }) => {
 	const [formData, setFormData] = useState({
 		id: userId,
-		year: 1999,
+		year: 1997,
 		month: 1,
 		date: 4,
 		hours: 14,
@@ -48,9 +48,24 @@ const Fetch = ({ userId }) => {
 
 	const handleChange = (e) => {
 		const { name, value } = e.target
+
+		// Determine the correct type for each field
+		let convertedValue = value
+		if (
+			['year', 'month', 'date', 'hours', 'minutes', 'seconds'].includes(
+				name
+			)
+		) {
+			// Convert to integer for date and time fields
+			convertedValue = parseInt(value, 10)
+		} else if (['latitude', 'longitude', 'timezone'].includes(name)) {
+			// Convert to float for geographic fields
+			convertedValue = parseFloat(value)
+		}
+
 		setFormData({
 			...formData,
-			[name]: value,
+			[name]: convertedValue,
 		})
 	}
 
@@ -108,6 +123,7 @@ const Fetch = ({ userId }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
+
 		if (existingUser && !updateExistingData) {
 			setSuccessMessage(
 				'If you want to update your Chart! Click Update data and Enter your details.'
@@ -128,9 +144,10 @@ const Fetch = ({ userId }) => {
 		}
 
 		try {
+			console.log(formData)
 			const response = await axios.post(
 				'https://yourstars-lj6b.vercel.app/fetchAstrologyData',
-				{ ...formData, ...locationData }
+				{ ...formData }
 			)
 
 			if (response.data) {
