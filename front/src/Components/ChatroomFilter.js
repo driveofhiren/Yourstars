@@ -26,6 +26,7 @@ const modalStyles = {
 const ChatroomFilter = ({ userId }) => {
 	const [astrologyData, setAstrologyData] = useState([])
 	const [ObjectId, setObjectId] = useState('')
+	const [relatedRooms, setRelatedRooms] = useState([])
 	const [createRoom, setCreateRoom] = useState({
 		planet: [],
 		sign: '',
@@ -44,7 +45,9 @@ const ChatroomFilter = ({ userId }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [chats, setChats] = useState([])
 	const [newMessage, setNewMessage] = useState('')
+
 	const [conjunctions, setConjunctions] = useState({})
+	const [isLoadingRelatedRooms, setIsLoadingRelatedRooms] = useState(false)
 
 	const fetchChats = async (chatroomId) => {
 		try {
@@ -55,6 +58,45 @@ const ChatroomFilter = ({ userId }) => {
 		} catch (error) {
 			console.error('Error fetching chatroom messages:', error)
 		}
+	}
+
+	const fetchRelatedRooms = async () => {
+		if (!conjunctions) return
+
+		setIsLoadingRelatedRooms(true)
+		const fetchedRelatedRooms = []
+
+		// Iterate over conjunctions and fetch rooms for each
+		for (const [key, planets] of Object.entries(conjunctions)) {
+			const primaryPlanet = planets[0]
+			const sign = astrologyData[primaryPlanet]?.current_sign || ''
+			const house = calculateHouse(sign)
+
+			// Prepare filter data for this conjunction
+			const filterData = {
+				planet: planets, // Planets in conjunction
+				sign, // Calculated sign for the conjunction
+				house, // Calculated house for the conjunction
+				ObjectId, // User's ObjectId for createdBy filtering
+			}
+
+			try {
+				const response = await axios.post(
+					'https://yourstars-lj6b.vercel.app/chatrooms/filter',
+					filterData
+				)
+				// Aggregate results into `fetchedRelatedRooms`
+				if (response.data) {
+					fetchedRelatedRooms.push(...response.data)
+				}
+			} catch (err) {
+				console.error('Error fetching related chatrooms:', err)
+			}
+		}
+
+		// Update the related rooms state after all requests complete
+		setRelatedRooms(fetchedRelatedRooms)
+		setIsLoadingRelatedRooms(false)
 	}
 
 	const sendMessage = async () => {
@@ -115,6 +157,7 @@ const ChatroomFilter = ({ userId }) => {
 			// Only fetch if ObjectId is valid
 			fetchJoinedRooms()
 			fetchYourRooms()
+			fetchRelatedRooms()
 		}
 	}, [ObjectId])
 
@@ -278,6 +321,7 @@ const ChatroomFilter = ({ userId }) => {
 		}
 		await fetchJoinedRooms()
 		await fetchYourRooms()
+		await fetchRelatedRooms()
 	}
 
 	const leaveChatroom = async (chatroomId) => {
@@ -309,6 +353,7 @@ const ChatroomFilter = ({ userId }) => {
 		}
 		await fetchJoinedRooms()
 		await fetchYourRooms()
+		await fetchRelatedRooms()
 	}
 	const closeModal = () => {
 		setIsModalOpen(false)
@@ -330,27 +375,60 @@ const ChatroomFilter = ({ userId }) => {
 								return (
 									<div
 										key={chatroom._id}
-										className="chatroom-item"
+										className={`chatroom-item ${
+											isMember
+												? 'clickable'
+												: 'non-clickable'
+										}`}
+										onClick={
+											isMember
+												? () => selectChatroom(chatroom)
+												: null
+										}
 									>
-										{chatroom.planets.join(', ')} S :{' '}
-										{chatroom.sign} H: {chatroom.house}{' '}
-										{isMember ? (
-											<button
-												onClick={() =>
-													leaveChatroom(chatroom._id)
-												}
-											>
-												Leave
-											</button>
-										) : (
-											<button
-												onClick={() =>
-													joinChatroom(chatroom._id)
-												}
-											>
-												Join
-											</button>
-										)}
+										<div className="chatroom-details">
+											<div className="chatroom-info">
+												<span className="chatroom-planets">
+													{chatroom.planets.join(
+														', '
+													)}
+												</span>
+											</div>
+
+											<span className="chatroom-sign-house">
+												Sign: {chatroom.sign}, House:{' '}
+												{chatroom.house}
+											</span>
+											<span className="chatroom-member-count">
+												{chatroom.members.length}{' '}
+												Members
+											</span>
+
+											{isMember ? (
+												<button
+													className="leave-button"
+													onClick={(e) => {
+														e.stopPropagation() // Prevent parent click
+														leaveChatroom(
+															chatroom._id
+														)
+													}}
+												>
+													Leave
+												</button>
+											) : (
+												<button
+													className="join-button"
+													onClick={() =>
+														joinChatroom(
+															chatroom._id
+														)
+													}
+												>
+													Join
+												</button>
+											)}
+										</div>
 									</div>
 								)
 							})}
@@ -361,18 +439,96 @@ const ChatroomFilter = ({ userId }) => {
 				</div>
 				{/* joined Chatrooms */}
 				<div className="chatroom-section middle-divs">
-					<ChatroomList
-						chatrooms={chatrooms}
-						joinChatroom={joinChatroom}
-						leaveChatroom={leaveChatroom}
-						ObjectId={ObjectId}
-					/>
+					{/* Related Rooms Section */}
+					<div className="chatrooms-section">
+						<h6>Related Chatrooms</h6>
+						{relatedRooms.length > 0 ? (
+							<div className="chatroom-grid">
+								{relatedRooms.map((chatroom) => {
+									const isMember =
+										chatroom.members.includes(ObjectId)
+
+									return (
+										<div
+											key={chatroom._id}
+											className={`chatroom-item ${
+												isMember
+													? 'clickable'
+													: 'non-clickable'
+											}`}
+											onClick={
+												isMember
+													? () =>
+															selectChatroom(
+																chatroom
+															)
+													: null
+											}
+										>
+											<div className="chatroom-details">
+												<div className="chatroom-info">
+													<span className="chatroom-planets">
+														{chatroom.planets.join(
+															', '
+														)}
+													</span>
+													<span className="chatroom-creator">
+														by{' '}
+														{
+															chatroom.createdBy
+																.name
+														}
+													</span>
+												</div>
+
+												<span className="chatroom-sign-house">
+													Sign: {chatroom.sign},
+													House: {chatroom.house}
+												</span>
+												<span className="chatroom-member-count">
+													{chatroom.members.length}{' '}
+													Members
+												</span>
+
+												{isMember ? (
+													<button
+														className="leave-button"
+														onClick={(e) => {
+															e.stopPropagation() // Prevent parent click
+															leaveChatroom(
+																chatroom._id
+															)
+														}}
+													>
+														Leave
+													</button>
+												) : (
+													<button
+														className="join-button"
+														onClick={() =>
+															joinChatroom(
+																chatroom._id
+															)
+														}
+													>
+														Join
+													</button>
+												)}
+											</div>
+										</div>
+									)
+								})}
+							</div>
+						) : (
+							<p className="empty-message">
+								No related chatrooms found.
+							</p>
+						)}
+					</div>
 
 					{joinedChatrooms.length > 0 ? (
-						<div className="joined-chatrooms bottom-div">
-							<h5>
-								<p>Joined Chatrooms</p>
-							</h5>
+						<div className="chatrooms-section">
+							<h6>Joined Chatrooms</h6>
 							<div className="chatroom-grid">
 								{joinedChatrooms.map((chatroom) => (
 									<div
@@ -380,17 +536,41 @@ const ChatroomFilter = ({ userId }) => {
 										className="chatroom-item"
 										onClick={() => selectChatroom(chatroom)}
 									>
-										{chatroom.planets.join(', ')} Sign :{' '}
-										{chatroom.sign} House: {chatroom.house}{' '}
-										by {chatroom.createdBy.name}
-										<button
-											onClick={(e) => {
-												e.stopPropagation() // Prevent click on parent
-												leaveChatroom(chatroom._id)
-											}}
-										>
-											Leave
-										</button>
+										{/* Compact Chatroom Details */}
+										<div className="chatroom-details">
+											<div className="chatroom-info">
+												<span className="chatroom-planets">
+													{chatroom.planets.join(
+														', '
+													)}
+												</span>
+												<span className="chatroom-creator">
+													by {chatroom.createdBy.name}
+												</span>
+											</div>
+
+											<span className="chatroom-sign-house">
+												Sign: {chatroom.sign}, House:{' '}
+												{chatroom.house}
+											</span>
+											<span className="chatroom-member-count">
+												{chatroom.members?.length || 0}{' '}
+												Members
+											</span>
+											<span>
+												<button
+													className="leave-button"
+													onClick={(e) => {
+														e.stopPropagation() // Prevent click on parent
+														leaveChatroom(
+															chatroom._id
+														)
+													}}
+												>
+													Leave
+												</button>
+											</span>
+										</div>
 									</div>
 								))}
 							</div>
@@ -400,6 +580,14 @@ const ChatroomFilter = ({ userId }) => {
 							No joined chatrooms found.
 						</p>
 					)}
+
+					<ChatroomList
+						chatrooms={chatrooms}
+						joinChatroom={joinChatroom}
+						leaveChatroom={leaveChatroom}
+						selectChatroom={selectChatroom}
+						ObjectId={ObjectId}
+					/>
 				</div>
 
 				<div className="create-filter-section right-div">

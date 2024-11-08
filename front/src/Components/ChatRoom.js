@@ -7,7 +7,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 	const [discussions, setDiscussions] = useState([])
 	const [selectedDiscussion, setSelectedDiscussion] = useState(null)
 	const [newDiscussionName, setNewDiscussionName] = useState('')
-	const [newDiscussionType, setNewDiscussionType] = useState('')
+	const [newDiscussionType, setNewDiscussionType] = useState('General')
 
 	useEffect(() => {
 		const fetchDiscussions = async () => {
@@ -33,7 +33,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 		)
 		setDiscussions([...discussions, response.data])
 		setNewDiscussionName('')
-		setNewDiscussionType('')
+		setNewDiscussionType('General')
 	}
 
 	return (
@@ -46,17 +46,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 					value={newDiscussionName}
 					onChange={(e) => setNewDiscussionName(e.target.value)}
 				/>
-				<div>
-					<button
-						onClick={createDiscussion}
-						disabled={!newDiscussionName.trim()}
-					>
-						Create Discussion
-					</button>
-					<button onClick={closeModal} className="close-button">
-						Close
-					</button>
-				</div>
+
 				<select
 					value={newDiscussionType}
 					onChange={(e) => setNewDiscussionType(e.target.value)}
@@ -80,6 +70,17 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 						</option>
 					))}
 				</select>
+				<div>
+					<button
+						onClick={createDiscussion}
+						disabled={!newDiscussionName.trim()}
+					>
+						Create Discussion
+					</button>
+					<button onClick={closeModal} className="close-button">
+						Close
+					</button>
+				</div>
 			</div>
 
 			<div>

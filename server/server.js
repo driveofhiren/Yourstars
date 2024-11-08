@@ -478,6 +478,7 @@ app.get('/chatrooms/:chatroomId', async (req, res) => {
 
 app.post('/chatrooms/filter', async (req, res) => {
 	let { planet, sign, house, ObjectId } = req.body
+	console.log(req.body)
 
 	try {
 		// Ensure user exists

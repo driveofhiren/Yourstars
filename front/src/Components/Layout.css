@@ -140,15 +140,63 @@
 	font-size: 1.8em;
 	margin-bottom: 20px;
 }
+.chatrooms-section {
+	padding: 1em;
+	background-color: #f8f9fa;
+	border-radius: 8px;
+	margin-bottom: 5px;
+}
 
 /* Chatroom List Items */
 .chatroom-item {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: #ffffff;
+	padding: 5px;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	font-size: 0.9em;
+	margin-bottom: 5px;
+}
+.chatroom-details {
+	flex-direction: row;
+	gap: 4px;
+}
+.chatroom-action {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 0.5em;
 	font-size: small;
-	padding: 3px;
-	margin-bottom: 8px;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	background-color: #fff;
+}
+.chatroom-planets {
+	font-weight: bold;
+	color: #333333;
+}
+
+.chatroom-sign-house,
+.chatroom-member-count {
+	color: #777777;
+	font-size: 0.9em;
+}
+
+.chatroom-member-count {
+	font-style: italic;
+	color: #555555;
+}
+.chatroom-item.clickable {
+	cursor: pointer;
+	color: #000; /* active color */
+}
+
+.chatroom-item.non-clickable {
+	cursor: not-allowed;
+	color: #888; /* inactive color */
+}
+
+.leave-button,
+.join-button {
+	margin-top: 5px;
 }
 
 /* Available Chatrooms Container */
@@ -171,7 +219,6 @@
 /* Buttons */
 .primary-button,
 button {
-	font-size: 1em;
 	padding: 5px 10px;
 	border: none;
 	border-radius: 4px;
@@ -371,7 +418,10 @@ button:hover {
 	margin-bottom: 16px; /* Space below the form */
 	font-size: small;
 }
-
+.empty-message {
+	text-align: center;
+	color: aliceblue !important;
+}
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
 	.box {
