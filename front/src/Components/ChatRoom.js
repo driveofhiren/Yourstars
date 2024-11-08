@@ -37,9 +37,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 	}
 
 	return (
-		<div
-		//div style background coolor please
-		>
+		<div>
 			<div className="create-discussion">
 				<input
 					placeholder="Discussion Name"

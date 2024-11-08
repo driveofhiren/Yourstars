@@ -13,7 +13,9 @@ const modalStyles = {
 		bottom: 'auto',
 		marginRight: '-50%',
 		transform: 'translate(-50%, -50%)',
-		background: 'lightslategrey',
+		background: '#a3d8ff',
+		boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // corrected property name
+		transition: 'background-color 0.3s ease, transform 0.2s ease',
 		width: '100%',
 		maxWidth: '90%',
 		maxHeight: 'auto',
@@ -379,6 +381,8 @@ const ChatroomFilter = ({ userId }) => {
 											isMember
 												? 'clickable'
 												: 'non-clickable'
+										} ${
+											isMember ? 'member' : 'non-member'
 										}`}
 										onClick={
 											isMember
@@ -455,6 +459,10 @@ const ChatroomFilter = ({ userId }) => {
 												isMember
 													? 'clickable'
 													: 'non-clickable'
+											}  ${
+												isMember
+													? 'member'
+													: 'non-member'
 											}`}
 											onClick={
 												isMember
@@ -533,7 +541,7 @@ const ChatroomFilter = ({ userId }) => {
 								{joinedChatrooms.map((chatroom) => (
 									<div
 										key={chatroom._id}
-										className="chatroom-item"
+										className="chatroom-item member"
 										onClick={() => selectChatroom(chatroom)}
 									>
 										{/* Compact Chatroom Details */}
@@ -599,7 +607,6 @@ const ChatroomFilter = ({ userId }) => {
 									handleCreatePlanetChange(e.target.value)
 								}
 							>
-								<option value="">Choose Placement</option>
 								{Object.entries(conjunctions).map(
 									([key, planets]) => (
 										<option

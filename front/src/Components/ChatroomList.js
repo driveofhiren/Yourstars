@@ -1,4 +1,5 @@
 import React from 'react'
+import './Layout.css'
 
 const ChatroomList = ({
 	chatrooms,
@@ -9,6 +10,7 @@ const ChatroomList = ({
 }) => {
 	return (
 		<div className="top-div">
+			<p>Search Results</p>
 			{chatrooms.length > 0 ? (
 				<div className="chatroom-grid">
 					{chatrooms.map((chatroom) => {
@@ -19,7 +21,9 @@ const ChatroomList = ({
 							<div
 								key={chatroom._id}
 								className={`chatroom-item ${
-									isMember ? 'clickable' : 'non-clickable'
+									isMember
+										? 'clickable member'
+										: 'non-clickable non-member'
 								}`}
 								onClick={
 									isMember
@@ -31,9 +35,6 @@ const ChatroomList = ({
 									<div className="chatroom-info">
 										<span className="chatroom-planets">
 											{chatroom.planets.join(', ')}
-										</span>
-										<span className="chatroom-creator">
-											by {chatroom.createdBy.name}
 										</span>
 									</div>
 
@@ -71,7 +72,7 @@ const ChatroomList = ({
 					})}
 				</div>
 			) : (
-				<p className="empty-message">Filter for more chatrooms!</p>
+				<p className="empty-message">No chatrooms found.</p>
 			)}
 		</div>
 	)

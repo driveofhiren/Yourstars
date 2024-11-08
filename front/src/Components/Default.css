@@ -50,9 +50,11 @@ ul {
 /* Link Hover Style */
 .nav-link:hover {
 	color: #00bcd4 !important; /* Light cyan on hover */
-	
 }
-
+button[type='submit'] {
+	margin-top: 20px !important; /* Adjust as needed */
+	font-size: 0.875rem; /* Small font size, adjust as needed */
+}
 
 /* Specific Style for Logout Link */
 .logout-link {
