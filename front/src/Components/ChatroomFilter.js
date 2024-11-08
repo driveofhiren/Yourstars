@@ -237,6 +237,12 @@ const ChatroomFilter = ({ userId }) => {
 
 	const createChatroom = async () => {
 		try {
+			// Check if planets are empty
+			if (!createRoom.planet || createRoom.planet.length === 0) {
+				alert('Please Select Planets')
+				return // Exit the function if planets are empty
+			}
+
 			const newRoomData = {
 				planet: createRoom.planet,
 				sign: createRoom.sign,
@@ -248,12 +254,16 @@ const ChatroomFilter = ({ userId }) => {
 				'https://yourstars-lj6b.vercel.app/chatrooms',
 				newRoomData
 			)
-			// alert('Chatroom created successfully!')
+
+			// Reset the form data after successful creation
 			setCreateRoom({ planet: [], sign: '', house: '' })
 		} catch (err) {
+			// Handle errors during chatroom creation
 			console.error('Error creating chatroom', err)
-			alert(err.response.data)
+			alert(err.response ? err.response.data : 'An error occurred')
 		}
+
+		// Fetch updated rooms after the chatroom creation attempt
 		await fetchJoinedRooms()
 		await fetchYourRooms()
 	}
@@ -607,6 +617,7 @@ const ChatroomFilter = ({ userId }) => {
 									handleCreatePlanetChange(e.target.value)
 								}
 							>
+								<option value="">Search room</option>
 								{Object.entries(conjunctions).map(
 									([key, planets]) => (
 										<option
