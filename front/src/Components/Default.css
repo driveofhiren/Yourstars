@@ -1,6 +1,6 @@
 body {
 	color: rgb(0, 0, 0);
-	background-color: #1f3569;
+	background-color: #000b58;
 }
 
 input,
@@ -21,12 +21,20 @@ select {
 ul {
 	list-style: none;
 	padding: 0;
-	margin-top: 10px;
+
 	width: 100%;
 }
 .custom-navbar {
-	background-color: #212529 !important; /* Darker shade for navbar */
+	background-color: #222831; /* Dark background with slight gray tint */
 	padding: 10px 20px;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+	transition: background-color 0.3s ease;
+}
+.custom-navbar .navbar-brand {
+	font-size: 1.8em;
+	font-weight: bold;
+	color: #00adb5; /* Teal color for brand text */
+	transition: color 0.3s ease;
 }
 
 /* Brand Name Style */

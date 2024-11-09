@@ -272,7 +272,7 @@ const ChatroomFilter = ({ userId }) => {
 		const { planet, sign, house, filterBy } = filterRoom
 		console.log(filterRoom)
 		setChatrooms([])
-		if (!planet.length || !filterBy) {
+		if (!planet || !filterBy) {
 			alert(
 				'Please select at least one planet and either a sign or a house.'
 			)
@@ -375,7 +375,7 @@ const ChatroomFilter = ({ userId }) => {
 		<div className="chatroom-filter-container">
 			<div className="box">
 				{/* your Chatrooms */}
-				<div className="chatroom-section left-div">
+				<div className="chatrooms-section left-div">
 					<h6>Your Chatrooms</h6>
 					{YourRooms.length > 0 ? (
 						<div className="joined-chatrooms">
@@ -448,7 +448,7 @@ const ChatroomFilter = ({ userId }) => {
 							})}
 						</div>
 					) : (
-						<p className="empty-message">No chatrooms found.</p>
+						<p className="empty-message">Make your first room!</p>
 					)}
 				</div>
 				{/* joined Chatrooms */}

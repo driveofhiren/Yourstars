@@ -22,30 +22,47 @@ const Home = ({ user, onLogin, onLogout }) => {
 
 	return (
 		<div className="container text-center mt-5 home-container">
-			<h1 className="display-4">Welcome to Astrology App</h1>
-			<p className="lead">
-				Discover the secrets of the cosmos with our Astrology App.
-				Explore your horoscope!
+			<h1 className="display-3 app-title">Welcome to YourStars</h1>
+			<p className="lead tagline">
+				Connect with others who share your astrological placements and
+				explore together.
 			</p>
-			<p className="mt-4">
-				In the future, we plan to add more exciting features and ideas
-				to enhance your astrological journey.
+			<p className="mt-3 description">
+				Explore your astrological placements, connect with people who
+				share similar cosmic influences, and engage in enriching
+				discussions about your stars.
 			</p>
 
-			{user ? (
-				<div className="welcome-container">
-					<h2 className="welcome-message">
-						Welcome, {user.displayName}!
-					</h2>
-					<button onClick={onLogout} className="logout-button">
-						Logout
+			<div className="cta-section text-center mt-5">
+				{user ? (
+					<div className="welcome-container">
+						<h2 className="welcome-message">
+							Welcome back, {user.displayName}!
+						</h2>
+						<button onClick={onLogout} className="logout-button">
+							Logout
+						</button>
+					</div>
+				) : (
+					<button onClick={handleLogin} className="login-button">
+						Login
 					</button>
-				</div>
-			) : (
-				<button onClick={handleLogin} className="login-button">
-					Login with Google
-				</button>
-			)}
+				)}
+			</div>
+
+			<div className="description-section mt-5">
+				<h3 className="feature-heading">What’s Coming Next?</h3>
+				<p className="feature-description">
+					At YourStars, we're bringing astrology to life by allowing
+					users to connect, communicate, and collaborate based on
+					their planets alignments. Soon, you'll be able to privately
+					message other users, build meaningful connections, and even
+					match with others who share similar astrological placements.
+					Whether you're seeking personal insights or looking for
+					expert guidance, our platform will offer easy access to
+					professional astrologers for personalized support.
+				</p>
+			</div>
 		</div>
 	)
 }

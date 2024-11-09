@@ -14,6 +14,12 @@ const Navigation = ({ user, onLogout }) => {
 				<Nav className="ml-auto">
 					{user && (
 						<>
+							<Navbar.Text
+								className="user-display"
+								style={{ margin: '0 auto', color: '#F6FB7A' }}
+							>
+								<strong>{user.displayName}</strong>
+							</Navbar.Text>
 							<Nav.Link
 								as={Link}
 								to="/fetch"
@@ -26,8 +32,9 @@ const Navigation = ({ user, onLogout }) => {
 								to="/Chatrooms"
 								className="nav-link"
 							>
-								Chatroom
+								Chatrooms
 							</Nav.Link>
+
 							<Nav.Link
 								onClick={onLogout}
 								className="nav-link logout-link"

@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Container, Col, Row, Form, Button } from 'react-bootstrap'
+import { Container, Col, Row, Form, Button, Alert } from 'react-bootstrap'
 import './Default.css'
 import './Layout.css'
 
 const Fetch = ({ userId }) => {
 	const [formData, setFormData] = useState({
 		id: userId,
-		year: 1997,
-		month: 1,
-		date: 4,
-		hours: 14,
-		minutes: 15,
+		year: null,
+		month: null,
+		date: null,
+		hours: null,
+		minutes: null,
 		seconds: 0,
 		latitude: null,
 		longitude: null,
 		timezone: null,
-		name: '',
-		address: '',
+		name: 'Atom',
+		address: null,
 		settings: {
 			observation_point: 'topocentric',
 			ayanamsha: 'lahiri',
@@ -27,39 +27,39 @@ const Fetch = ({ userId }) => {
 	const [successMessage, setSuccessMessage] = useState('')
 	const [existingUser, setExistingUser] = useState(null)
 	const [updateExistingData, setUpdateExistingData] = useState(false)
-	const [locationData, setLocationData] = useState(null)
+	const [errors, setErrors] = useState({})
 
 	useEffect(() => {
-		const checkUserExists = async () => {
-			try {
-				const response = await axios.get(
-					`https://yourstars-lj6b.vercel.app/users/${formData.id}`
-				)
-				const existingUser = response.data
-				if (existingUser) {
-					setExistingUser(existingUser)
-				}
-			} catch (error) {
-				console.error('Error checking user:', error)
-			}
-		}
 		checkUserExists()
 	}, [formData.id])
-
+	useEffect(() => {
+		fetchLocationData()
+	}, [formData.address])
+	const checkUserExists = async () => {
+		try {
+			const response = await axios.get(
+				`https://yourstars-lj6b.vercel.app/user/${formData.id}`
+			)
+			console.log(response.data.astrologyData)
+			const existingUser = response.data.astrologyData
+			if (existingUser) {
+				setExistingUser(existingUser)
+			}
+		} catch (error) {
+			console.error('Error checking user:', error)
+		}
+	}
 	const handleChange = (e) => {
 		const { name, value } = e.target
-
-		// Determine the correct type for each field
 		let convertedValue = value
+
 		if (
 			['year', 'month', 'date', 'hours', 'minutes', 'seconds'].includes(
 				name
 			)
 		) {
-			// Convert to integer for date and time fields
 			convertedValue = parseInt(value, 10)
 		} else if (['latitude', 'longitude', 'timezone'].includes(name)) {
-			// Convert to float for geographic fields
 			convertedValue = parseFloat(value)
 		}
 
@@ -67,6 +67,46 @@ const Fetch = ({ userId }) => {
 			...formData,
 			[name]: convertedValue,
 		})
+		setErrors({
+			...errors,
+			[name]: '', // Reset individual field error
+		})
+	}
+	const validateForm = () => {
+		const errorMessages = [] // Initialize an array to hold each error message
+
+		// Check each field and add specific error messages if validation fails
+		if (!formData.name) {
+			errorMessages.push('Name is required.')
+		}
+		if (!formData.address) {
+			errorMessages.push('Put your Birthplace.')
+		}
+		if (!formData.year || formData.year < 1900 || formData.year > 2024) {
+			errorMessages.push('Please enter a valid year (1900-2024).')
+		}
+		if (!formData.month || formData.month < 1 || formData.month > 12) {
+			errorMessages.push('Please enter a valid month (1-12).')
+		}
+		if (!formData.date || formData.date < 1 || formData.date > 31) {
+			errorMessages.push('Please enter a valid date (1-31).')
+		}
+		if (!formData.hours || formData.hours < 0 || formData.hours > 23) {
+			errorMessages.push('Please enter valid hours (0-23).')
+		}
+		if (
+			!formData.minutes ||
+			formData.minutes < 0 ||
+			formData.minutes > 59
+		) {
+			errorMessages.push('Please enter valid minutes (0-59).')
+		}
+
+		// Set the error messages in the errorMessage state as an array
+		setErrorMessage(errorMessages)
+
+		// Return true if no errors, false if there are any
+		return errorMessages.length === 0
 	}
 
 	const fetchLocationData = async () => {
@@ -96,33 +136,29 @@ const Fetch = ({ userId }) => {
 			)
 			const timezone = timezoneResponse.data.rawOffset / 3600
 
-			setLocationData({
-				latitude,
-				longitude,
-				timezone,
-			})
+			setFormData((prevFormData) => ({
+				...prevFormData,
+				latitude: latitude,
+				longitude: longitude,
+				timezone: timezone,
+			}))
+
 			setErrorMessage('')
 			return true
 		} catch (error) {
 			console.error('Problem with fetching Location!', error)
-			setErrorMessage('Problem with fetching Location. Please try again!')
+
 			return false
 		}
 	}
 
-	useEffect(() => {
-		if (locationData) {
-			setFormData((prevFormData) => ({
-				...prevFormData,
-				latitude: locationData.latitude,
-				longitude: locationData.longitude,
-				timezone: locationData.timezone,
-			}))
-		}
-	}, [locationData])
-
 	const handleSubmit = async (e) => {
 		e.preventDefault()
+		setSuccessMessage('')
+
+		if (!validateForm()) {
+			return
+		}
 
 		if (existingUser && !updateExistingData) {
 			setSuccessMessage(
@@ -131,20 +167,7 @@ const Fetch = ({ userId }) => {
 			return
 		}
 
-		await fetchLocationData()
-
-		if (
-			!locationData ||
-			!locationData.latitude ||
-			!locationData.longitude ||
-			!locationData.timezone
-		) {
-			setErrorMessage('Location data is incomplete. Please try again.')
-			return
-		}
-
-		try {
-			console.log(formData)
+		if (formData.latitude) {
 			const response = await axios.post(
 				'https://yourstars-lj6b.vercel.app/fetchAstrologyData',
 				{ ...formData }
@@ -156,10 +179,8 @@ const Fetch = ({ userId }) => {
 			} else {
 				throw new Error('Database did not update.')
 			}
-		} catch (error) {
-			console.error('Error Fetching Data:', error)
-			setErrorMessage(error.response?.data || error.message)
-			setSuccessMessage('')
+		} else {
+			setErrorMessage('Location is not updated!')
 		}
 	}
 
@@ -167,6 +188,25 @@ const Fetch = ({ userId }) => {
 		<Container fluid className="h-100">
 			<Col xs={12} md={8} lg={6} className="mx-auto">
 				<Row className="justify-content-center mt-5">
+					<Col xs={12}>
+						{errorMessage.length > 0 && (
+							<div className="alert">
+								<ul>
+									{errorMessage.map((msg, index) => (
+										<p key={index}>{msg}</p>
+									))}
+								</ul>
+							</div>
+						)}{' '}
+						{successMessage && (
+							<div className="alert alert-success">
+								<ul>
+									<p>{successMessage}</p>
+								</ul>
+							</div>
+						)}
+					</Col>
+
 					{existingUser && !updateExistingData && (
 						<Col xs={12} className="text-center mb-3">
 							<p>Do you want to update your chart?</p>
@@ -178,7 +218,6 @@ const Fetch = ({ userId }) => {
 							</Button>
 						</Col>
 					)}
-
 					{(!existingUser || updateExistingData) && (
 						<Col xs={12}>
 							<Form onSubmit={handleSubmit}>
@@ -191,11 +230,14 @@ const Fetch = ({ userId }) => {
 												name="name"
 												value={formData.name}
 												onChange={handleChange}
-												required
+												isInvalid={!!errors.name}
 											/>
+											<Form.Control.Feedback type="invalid">
+												{errors.name}
+											</Form.Control.Feedback>
 										</Form.Group>
 									</Col>
-									<Col md={6}>
+									<Col md={8}>
 										<Form.Group controlId="address">
 											<Form.Label>Birth Place</Form.Label>
 											<Form.Control
@@ -203,13 +245,15 @@ const Fetch = ({ userId }) => {
 												name="address"
 												value={formData.address}
 												onChange={handleChange}
-												required
-												placeholder="City,State,Country"
+												isInvalid={!!errors.address}
+												placeholder="City, State, Country"
 											/>
+											<Form.Control.Feedback type="invalid">
+												{errors.address}
+											</Form.Control.Feedback>
 										</Form.Group>
 									</Col>
-									{/* Other fields remain as they are */}
-									<Col md={4}>
+									<Col md={2}>
 										<Form.Group controlId="year">
 											<Form.Label>Year</Form.Label>
 											<Form.Control
@@ -217,11 +261,14 @@ const Fetch = ({ userId }) => {
 												name="year"
 												value={formData.year}
 												onChange={handleChange}
-												required
+												isInvalid={!!errors.year}
 											/>
+											<Form.Control.Feedback type="invalid">
+												{errors.year}
+											</Form.Control.Feedback>
 										</Form.Group>
 									</Col>
-									<Col md={4}>
+									<Col md={2}>
 										<Form.Group controlId="month">
 											<Form.Label>Month</Form.Label>
 											<Form.Control
@@ -229,11 +276,10 @@ const Fetch = ({ userId }) => {
 												name="month"
 												value={formData.month}
 												onChange={handleChange}
-												required
 											/>
 										</Form.Group>
 									</Col>
-									<Col md={4}>
+									<Col md={2}>
 										<Form.Group controlId="date">
 											<Form.Label>Date</Form.Label>
 											<Form.Control
@@ -241,11 +287,10 @@ const Fetch = ({ userId }) => {
 												name="date"
 												value={formData.date}
 												onChange={handleChange}
-												required
 											/>
 										</Form.Group>
 									</Col>
-									<Col md={4}>
+									<Col md={2}>
 										<Form.Group controlId="hours">
 											<Form.Label>Hours:</Form.Label>
 											<Form.Control
@@ -253,11 +298,11 @@ const Fetch = ({ userId }) => {
 												name="hours"
 												value={formData.hours}
 												onChange={handleChange}
-												required
+												placeholder="0-23"
 											/>
 										</Form.Group>
 									</Col>
-									<Col md={4}>
+									<Col md={2}>
 										<Form.Group controlId="minutes">
 											<Form.Label>Minutes:</Form.Label>
 											<Form.Control
@@ -265,32 +310,15 @@ const Fetch = ({ userId }) => {
 												name="minutes"
 												value={formData.minutes}
 												onChange={handleChange}
-												required
 											/>
 										</Form.Group>
 									</Col>
+									<Col md={2}>
+										<Button variant="primary" type="submit">
+											Fetch Data
+										</Button>
+									</Col>
 								</Row>
-
-								<Button variant="primary" type="submit">
-									Fetch Data
-								</Button>
-
-								{errorMessage && (
-									<div
-										className="alert alert-danger mt-3"
-										role="alert"
-									>
-										{errorMessage}
-									</div>
-								)}
-								{successMessage && (
-									<div
-										className="alert alert-success mt-3"
-										role="alert"
-									>
-										{successMessage}
-									</div>
-								)}
 							</Form>
 						</Col>
 					)}
