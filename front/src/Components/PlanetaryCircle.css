@@ -1,0 +1,99 @@
+.astrology-chart-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: radial-gradient(circle, #23233d, #151527);
+	border-radius: 50%;
+	width: 600px;
+	height: 600px;
+	padding: 20px;
+	position: relative;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.filter-controls {
+	margin-bottom: 15px;
+}
+
+.filter-select {
+	margin-left: 10px;
+	padding: 6px;
+	border-radius: 6px;
+	background-color: #3a3a5e;
+	color: #fff;
+	border: none;
+}
+
+.circle-container {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+}
+
+.circle-section {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform-origin: center center;
+}
+
+.house-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: #ffd700;
+	font-size: 12px;
+	transform: translateY(-50%);
+}
+.planet-icon {
+	font-size: 16px;
+	width: 50px; /* Increase width */
+	height: 50px; /* Increase height */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--planet-color, #ffd700);
+	border-radius: 50%;
+	color: #23233d;
+	cursor: pointer;
+	position: relative;
+
+	transition: background-color 0.3s, transform 0.3s;
+}
+
+.planet-icon:hover {
+	background-color: #ffed70;
+}
+
+.icon-options {
+	display: flex;
+	gap: 8px;
+	position: absolute;
+	top: -30px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.filter-icon,
+.create-room-icon {
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #ff5e7f;
+	border-radius: 50%;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	transition: transform 0.2s, background-color 0.2s;
+}
+
+.filter-icon:hover,
+.create-room-icon:hover {
+	transform: scale(1.2);
+	background-color: #03dac6;
+}

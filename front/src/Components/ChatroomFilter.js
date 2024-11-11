@@ -4,6 +4,7 @@ import ChatroomList from './ChatroomList'
 import Chatroom from './ChatRoom'
 import Modal from 'react-modal'
 import './Layout.css'
+import PlanetaryCircle from './PlanetaryCircle'
 
 const modalStyles = {
 	content: {
@@ -49,7 +50,6 @@ const ChatroomFilter = ({ userId }) => {
 	const [newMessage, setNewMessage] = useState('')
 
 	const [conjunctions, setConjunctions] = useState({})
-	const [isLoadingRelatedRooms, setIsLoadingRelatedRooms] = useState(false)
 
 	const fetchChats = async (chatroomId) => {
 		try {
@@ -64,22 +64,24 @@ const ChatroomFilter = ({ userId }) => {
 
 	const fetchRelatedRooms = async () => {
 		if (!conjunctions) return
-
-		setIsLoadingRelatedRooms(true)
 		const fetchedRelatedRooms = []
 
-		// Iterate over conjunctions and fetch rooms for each
-		for (const [key, planets] of Object.entries(conjunctions)) {
-			const primaryPlanet = planets[0]
+		// Iterate over conjunctions and fetch rooms for each conjunction
+		for (const [signKey, planetsData] of Object.entries(conjunctions)) {
+			// Extract only the planet names from planetsData
+			const planetNames = planetsData.map((p) => p.planet)
+
+			// Determine the sign and house based on the first planet in the conjunction
+			const primaryPlanet = planetNames[0]
 			const sign = astrologyData[primaryPlanet]?.current_sign || ''
 			const house = calculateHouse(sign)
 
 			// Prepare filter data for this conjunction
 			const filterData = {
-				planet: planets, // Planets in conjunction
+				planet: planetNames, // List of planet names in the conjunction
 				sign, // Calculated sign for the conjunction
 				house, // Calculated house for the conjunction
-				ObjectId, // User's ObjectId for createdBy filtering
+				ObjectId: ObjectId, // User's ObjectId for createdBy filtering
 			}
 
 			try {
@@ -98,7 +100,6 @@ const ChatroomFilter = ({ userId }) => {
 
 		// Update the related rooms state after all requests complete
 		setRelatedRooms(fetchedRelatedRooms)
-		setIsLoadingRelatedRooms(false)
 	}
 
 	const sendMessage = async () => {
@@ -130,7 +131,6 @@ const ChatroomFilter = ({ userId }) => {
 				`https://yourstars-lj6b.vercel.app/chatrooms/joined`,
 				{ ObjectId }
 			)
-			console.log(response.data)
 
 			setJoinedChatrooms(response.data)
 		} catch (error) {
@@ -143,7 +143,6 @@ const ChatroomFilter = ({ userId }) => {
 				`https://yourstars-lj6b.vercel.app/chatrooms/filter`,
 				{ ObjectId }
 			)
-			console.log(response.data)
 			setYourRooms(response.data)
 		} catch (error) {
 			console.error('Error fetching joined chatrooms:', error)
@@ -151,7 +150,6 @@ const ChatroomFilter = ({ userId }) => {
 	}
 	useEffect(() => {
 		fetchAstrologyData()
-		console.log(conjunctions)
 	}, [userId])
 
 	useEffect(() => {
@@ -172,7 +170,7 @@ const ChatroomFilter = ({ userId }) => {
 			setObjectId(response.data._id)
 
 			const conjunctions = {}
-			const excludedPlanets = ['Ascendant', 'Uranus', 'Neptune', 'Pluto'] // List of planets to exclude
+			const excludedPlanets = ['Uranus', 'Neptune', 'Pluto'] // List of planets to exclude
 
 			Object.entries(response.data.astrologyData[1]).forEach(
 				([planet, data]) => {
@@ -182,13 +180,17 @@ const ChatroomFilter = ({ userId }) => {
 					}
 
 					const { current_sign } = data
-					const signKey = `sign-${current_sign}`
+					const { fullDegree } = data
+					const signKey = current_sign
 					// const houseKey = `house-${current_house}`
 
 					if (!conjunctions[signKey]) conjunctions[signKey] = []
 					// if (!conjunctions[houseKey]) conjunctions[houseKey] = []
 
-					conjunctions[signKey].push(planet)
+					conjunctions[signKey].push({
+						planet,
+						degree: fullDegree,
+					})
 				}
 			)
 
@@ -208,7 +210,7 @@ const ChatroomFilter = ({ userId }) => {
 	}
 
 	const handleCreatePlanetChange = (selectedConjunction) => {
-		const planets = selectedConjunction.split(', ')
+		const planets = selectedConjunction
 		const primaryPlanet = planets[0]
 		setCreateRoom((prev) => ({
 			...prev,
@@ -221,9 +223,8 @@ const ChatroomFilter = ({ userId }) => {
 	}
 
 	const handleFilterPlanetChange = (selectedConjunction) => {
-		const planets = selectedConjunction
-			.split(',')
-			.map((planet) => planet.trim())
+		console.log(selectedConjunction)
+		const planets = selectedConjunction // Make sure to split string into an array
 		const primaryPlanet = planets[0]
 		setFilterRoom((prev) => ({
 			...prev,
@@ -235,30 +236,63 @@ const ChatroomFilter = ({ userId }) => {
 		}))
 	}
 
-	const createChatroom = async () => {
+	// const createChatroom = async () => {
+	// 	try {
+	// 		// Check if planets are empty
+	// 		if (!createRoom.planet || createRoom.planet.length === 0) {
+	// 			alert('Please Select Planets')
+	// 			return // Exit the function if planets are empty
+	// 		}
+
+	// 		const newRoomData = {
+	// 			planet: createRoom.planet,
+	// 			sign: createRoom.sign,
+	// 			house: createRoom.house,
+	// 			createdBy: ObjectId,
+	// 		}
+
+	// 		await axios.post(
+	// 			'https://yourstars-lj6b.vercel.app/chatrooms',
+	// 			newRoomData
+	// 		)
+
+	// 		// Reset the form data after successful creation
+	// 		setCreateRoom({ planet: [], sign: '', house: '' })
+	// 	} catch (err) {
+	// 		// Handle errors during chatroom creation
+	// 		console.error('Error creating chatroom', err)
+	// 		alert(err.response ? err.response.data : 'An error occurred')
+	// 	}
+
+	// 	// Fetch updated rooms after the chatroom creation attempt
+	// 	await fetchJoinedRooms()
+	// 	await fetchYourRooms()
+	// }
+
+	const createChatroom = async (newRoomData) => {
 		try {
-			// Check if planets are empty
-			if (!createRoom.planet || createRoom.planet.length === 0) {
+			// Check if planet data is valid
+			if (!newRoomData.planet || newRoomData.planet.length === 0) {
 				alert('Please Select Planets')
-				return // Exit the function if planets are empty
+				return
 			}
 
-			const newRoomData = {
-				planet: createRoom.planet,
-				sign: createRoom.sign,
-				house: createRoom.house,
-				createdBy: ObjectId,
+			// Add more properties as needed if newRoomData is correct
+			const data = {
+				planet: newRoomData.planet,
+				sign: newRoomData.sign,
+				house: newRoomData.house,
+				createdBy: ObjectId, // Assume this is set correctly elsewhere
 			}
 
 			await axios.post(
 				'https://yourstars-lj6b.vercel.app/chatrooms',
-				newRoomData
+				data
 			)
 
 			// Reset the form data after successful creation
 			setCreateRoom({ planet: [], sign: '', house: '' })
 		} catch (err) {
-			// Handle errors during chatroom creation
 			console.error('Error creating chatroom', err)
 			alert(err.response ? err.response.data : 'An error occurred')
 		}
@@ -268,7 +302,7 @@ const ChatroomFilter = ({ userId }) => {
 		await fetchYourRooms()
 	}
 
-	const filterChatrooms = async () => {
+	const filterChatrooms = async (filterRoom) => {
 		const { planet, sign, house, filterBy } = filterRoom
 		console.log(filterRoom)
 		setChatrooms([])
@@ -290,7 +324,6 @@ const ChatroomFilter = ({ userId }) => {
 				filterData.sign = sign
 				filterData.house = house
 			} else if (filterBy === 'house' && house) filterData.house = house
-
 			const response = await axios.post(
 				'https://yourstars-lj6b.vercel.app/chatrooms/filter',
 				filterData
@@ -451,11 +484,14 @@ const ChatroomFilter = ({ userId }) => {
 						<p className="empty-message">Make your first room!</p>
 					)}
 				</div>
+
 				{/* joined Chatrooms */}
 				<div className="chatroom-section middle-divs">
 					{/* Related Rooms Section */}
+
 					<div className="chatrooms-section">
 						<h6>Related Chatrooms</h6>
+
 						{relatedRooms.length > 0 ? (
 							<div className="chatroom-grid">
 								{relatedRooms.map((chatroom) => {
@@ -607,24 +643,37 @@ const ChatroomFilter = ({ userId }) => {
 						ObjectId={ObjectId}
 					/>
 				</div>
+				{console.log(conjunctions)}
+				<PlanetaryCircle
+					conjunctions={conjunctions}
+					createChatroom={createChatroom}
+					filterChatrooms={filterChatrooms}
+				/>
 
-				<div className="create-filter-section right-div">
+				{/* <div className="create-filter-section right-div">
 					<div className="create-chatroom">
 						<label>
 							<select
-								value={createRoom.planet}
+								value={createRoom.planet.join(', ')}
 								onChange={(e) =>
-									handleCreatePlanetChange(e.target.value)
+									handleCreatePlanetChange(
+										e.target.value.split(', ')
+									)
 								}
 							>
 								<option value="">Search room</option>
+
 								{Object.entries(conjunctions).map(
-									([key, planets]) => (
+									([signKey, planetsData]) => (
 										<option
-											key={key}
-											value={planets.join(', ')}
+											key={signKey}
+											value={planetsData
+												.map((p) => p.planet)
+												.join(', ')}
 										>
-											{planets.join(', ')}
+											{planetsData
+												.map((p) => p.planet)
+												.join(', ')}
 										</option>
 									)
 								)}
@@ -644,17 +693,24 @@ const ChatroomFilter = ({ userId }) => {
 							<select
 								value={filterRoom.planet.join(', ')}
 								onChange={(e) =>
-									handleFilterPlanetChange(e.target.value)
+									handleFilterPlanetChange(
+										e.target.value.split(', ')
+									)
 								}
 							>
 								<option value="">Search room</option>
+
 								{Object.entries(conjunctions).map(
-									([key, planets]) => (
+									([signKey, planetsData]) => (
 										<option
-											key={key}
-											value={planets.join(', ')}
+											key={signKey}
+											value={planetsData
+												.map((p) => p.planet)
+												.join(', ')}
 										>
-											{planets.join(', ')}
+											{planetsData
+												.map((p) => p.planet)
+												.join(', ')}
 										</option>
 									)
 								)}
@@ -689,12 +745,12 @@ const ChatroomFilter = ({ userId }) => {
 
 						<button
 							className="primary-button"
-							onClick={filterChatrooms}
+							onClick={() => filterChatrooms(filterRoom)}
 						>
 							Filter Chatrooms
 						</button>
 					</div>
-				</div>
+				</div> */}
 
 				<Modal
 					isOpen={isModalOpen}
