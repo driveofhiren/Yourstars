@@ -29,35 +29,35 @@
 .welcome-message {
 	font-size: 1.5rem;
 	font-weight: bold;
-	color: aliceblue;
+	color: #f1f1f1;
 	margin-bottom: 20px;
 }
 
 /* Login Button */
 .login-button {
-	background-color: #4285f4; /* Google blue */
-	color: white;
+	background-color: #4b92ff;
+	color: #ffffff;
 	font-size: 1.2rem;
 	font-weight: 500;
 	padding: 12px 30px;
 	border: none;
 	border-radius: 8px;
 	cursor: pointer;
-	transition: background-color 0.3s;
+	transition: background-color 0.3s, transform 0.3s;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .login-button:hover {
-	background-color: #357ae8;
+	background-color: #367ce8;
 }
 
 /* Logout Button */
 .logout-button {
-	background-color: #db4437; /* Google red */
-	color: aliceblue;
+	background-color: #db4437;
+	color: #ffffff;
 	font-size: 1rem;
 	padding: 10px 20px;
 	border: none;
@@ -73,7 +73,7 @@
 
 .chatroom-grid {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(2, 1fr);
 	gap: 5px;
 	transition: transform 0.3s ease;
 }
@@ -83,7 +83,7 @@
 	width: 30%;
 	background-color: #eeeeee;
 	height: 100%;
-
+	text-align: center;
 	padding: 10px;
 	border-radius: 8px;
 	color: #333348;
@@ -92,9 +92,10 @@
 
 /* Right Division (Div 3) */
 .right-div {
-	width: 16.66%;
+	width: 10%;
 	color: #333348;
-	background-color: lightblue;
+	font-size: small;
+	background-color: whitesmoke;
 	height: 100%;
 	padding: 10px;
 	text-align: center;
@@ -104,6 +105,7 @@
 
 /* Middle Divisions */
 .middle-divs {
+	display: flex;
 	width: 100%;
 }
 .middle-divs p {
@@ -140,11 +142,11 @@
 .chatroom-title {
 	text-align: center;
 	font-size: 1.8em;
+	color: #f5f5f5;
 	margin-bottom: 20px;
 }
 .chatrooms-section {
-	padding: 1em;
-	background-color: #9ed2be;
+	background-color: darkseagreen;
 	border-radius: 8px;
 	margin-bottom: 5px;
 }
@@ -163,7 +165,7 @@
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	transition: background-color 0.3s ease, transform 0.2s ease;
 
-	font-size: 0.9em;
+	font-size: small;
 	margin-bottom: 5px;
 }
 .circle-container {
@@ -171,7 +173,7 @@
 	width: 400px;
 	height: 400px;
 	border-radius: 50%;
-	border: 2px solid #333;
+
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -241,6 +243,9 @@
 	list-style-type: none;
 	padding: 0;
 }
+.joined-chatrooms {
+	display: block;
+}
 
 .joined-chatrooms ul li {
 	display: flex;
@@ -256,7 +261,8 @@
 /* Buttons */
 .primary-button,
 button {
-	padding: 5px 10px;
+	font-size: smaller;
+	padding: 3px 6px;
 	border: none;
 	border-radius: 4px !important;
 	cursor: pointer;
@@ -492,6 +498,7 @@ button:hover {
 	gap: 10px; /* Adds consistent space between elements */
 	align-items: center;
 	margin-bottom: 16px; /* Space below the form */
+	font-size: small;
 }
 .empty-message {
 	text-align: center;
@@ -503,7 +510,8 @@ button:hover {
 }
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
-	.box {
+	.box,
+	.middle-divs {
 		flex-direction: column;
 	}
 
@@ -540,6 +548,11 @@ button:hover {
 		display: grid;
 		grid-template-columns: 1fr 1fr; /* 2 columns on smaller screens */
 		gap: 8px;
+	}
+
+	.joined-chatrooms {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
 

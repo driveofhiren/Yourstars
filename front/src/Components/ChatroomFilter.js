@@ -407,32 +407,18 @@ const ChatroomFilter = ({ userId }) => {
 	return (
 		<div className="chatroom-filter-container">
 			<div className="box">
-				{/* your Chatrooms */}
 				<div className="chatrooms-section left-div">
-					<h6>Your Chatrooms</h6>
-					{YourRooms.length > 0 ? (
-						<div className="joined-chatrooms">
-							{YourRooms.map((chatroom) => {
-								// Check if the user is a member of the chatroom
-								const isMember =
-									chatroom.members.includes(ObjectId)
-
-								return (
+					{joinedChatrooms.length > 0 ? (
+						<div className="chatrooms-section">
+							<h6>Joined Chatrooms</h6>
+							<div className="chatroom-grid">
+								{joinedChatrooms.map((chatroom) => (
 									<div
 										key={chatroom._id}
-										className={`chatroom-item ${
-											isMember
-												? 'clickable'
-												: 'non-clickable'
-										} ${
-											isMember ? 'member' : 'non-member'
-										}`}
-										onClick={
-											isMember
-												? () => selectChatroom(chatroom)
-												: null
-										}
+										className="chatroom-item member"
+										onClick={() => selectChatroom(chatroom)}
 									>
+										{/* Compact Chatroom Details */}
 										<div className="chatroom-details">
 											<div className="chatroom-info">
 												<span className="chatroom-planets">
@@ -440,22 +426,25 @@ const ChatroomFilter = ({ userId }) => {
 														', '
 													)}
 												</span>
+												<span className="chatroom-member-count">
+													by {chatroom.createdBy.name}
+												</span>
 											</div>
 
 											<span className="chatroom-sign-house">
 												Sign: {chatroom.sign}, House:{' '}
 												{chatroom.house}
 											</span>
-											<span className="chatroom-member-count">
+
+											<div className="chatroom-member-count">
 												{chatroom.members.length}{' '}
 												Members
-											</span>
-
-											{isMember ? (
+											</div>
+											<span>
 												<button
 													className="leave-button"
 													onClick={(e) => {
-														e.stopPropagation() // Prevent parent click
+														e.stopPropagation() // Prevent click on parent
 														leaveChatroom(
 															chatroom._id
 														)
@@ -463,34 +452,19 @@ const ChatroomFilter = ({ userId }) => {
 												>
 													Leave
 												</button>
-											) : (
-												<button
-													className="join-button"
-													onClick={() =>
-														joinChatroom(
-															chatroom._id
-														)
-													}
-												>
-													Join
-												</button>
-											)}
+											</span>
 										</div>
 									</div>
-								)
-							})}
+								))}
+							</div>
 						</div>
 					) : (
-						<p className="empty-message">Make your first room!</p>
+						<p className="empty-message">
+							No joined chatrooms found.
+						</p>
 					)}
-				</div>
-
-				{/* joined Chatrooms */}
-				<div className="chatroom-section middle-divs">
-					{/* Related Rooms Section */}
-
 					<div className="chatrooms-section">
-						<h6>Related Chatrooms</h6>
+						<h6>Chatrooms based on your placements</h6>
 
 						{relatedRooms.length > 0 ? (
 							<div className="chatroom-grid">
@@ -539,10 +513,10 @@ const ChatroomFilter = ({ userId }) => {
 													Sign: {chatroom.sign},
 													House: {chatroom.house}
 												</span>
-												<span className="chatroom-member-count">
+												<div className="chatroom-member-count">
 													{chatroom.members.length}{' '}
 													Members
-												</span>
+												</div>
 
 												{isMember ? (
 													<button
@@ -579,62 +553,16 @@ const ChatroomFilter = ({ userId }) => {
 							</p>
 						)}
 					</div>
+				</div>
 
-					{joinedChatrooms.length > 0 ? (
-						<div className="chatrooms-section">
-							<h6>Joined Chatrooms</h6>
-							<div className="chatroom-grid">
-								{joinedChatrooms.map((chatroom) => (
-									<div
-										key={chatroom._id}
-										className="chatroom-item member"
-										onClick={() => selectChatroom(chatroom)}
-									>
-										{/* Compact Chatroom Details */}
-										<div className="chatroom-details">
-											<div className="chatroom-info">
-												<span className="chatroom-planets">
-													{chatroom.planets.join(
-														', '
-													)}
-												</span>
-												<span className="chatroom-member-count">
-													by {chatroom.createdBy.name}
-												</span>
-											</div>
-
-											<span className="chatroom-sign-house">
-												Sign: {chatroom.sign}, House:{' '}
-												{chatroom.house}
-											</span>
-											<span className="chatroom-member-count">
-												{chatroom.members?.length || 0}{' '}
-												Members
-											</span>
-											<span>
-												<button
-													className="leave-button"
-													onClick={(e) => {
-														e.stopPropagation() // Prevent click on parent
-														leaveChatroom(
-															chatroom._id
-														)
-													}}
-												>
-													Leave
-												</button>
-											</span>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-					) : (
-						<p className="empty-message">
-							No joined chatrooms found.
-						</p>
-					)}
-
+				{/* joined Chatrooms */}
+				<div className="middle-divs">
+					{/* Related Rooms Section */}
+					<PlanetaryCircle
+						conjunctions={conjunctions}
+						createChatroom={createChatroom}
+						filterChatrooms={filterChatrooms}
+					/>
 					<ChatroomList
 						chatrooms={chatrooms}
 						joinChatroom={joinChatroom}
@@ -645,11 +573,6 @@ const ChatroomFilter = ({ userId }) => {
 				</div>
 				{console.log(conjunctions)}
 
-				<PlanetaryCircle
-					conjunctions={conjunctions}
-					createChatroom={createChatroom}
-					filterChatrooms={filterChatrooms}
-				/>
 				{/* <div className="create-filter-section right-div">
 					<div className="create-chatroom">
 						<label>
@@ -752,6 +675,85 @@ const ChatroomFilter = ({ userId }) => {
 					</div>
 				</div> */}
 
+				<div className="right-div">
+					<h6>Your Chatrooms</h6>
+					{YourRooms.length > 0 ? (
+						<div className="chatroom-grid joined-chatrooms">
+							{YourRooms.map((chatroom) => {
+								// Check if the user is a member of the chatroom
+								const isMember =
+									chatroom.members.includes(ObjectId)
+
+								return (
+									<div
+										key={chatroom._id}
+										className={`chatroom-item ${
+											isMember
+												? 'clickable'
+												: 'non-clickable'
+										} ${
+											isMember ? 'member' : 'non-member'
+										}`}
+										onClick={
+											isMember
+												? () => selectChatroom(chatroom)
+												: null
+										}
+									>
+										<div className="chatroom-details">
+											<div className="chatroom-info">
+												<span className="chatroom-planets">
+													{chatroom.planets.join(
+														', '
+													)}
+												</span>
+											</div>
+
+											<div className="chatroom-sign-house">
+												Sign: {chatroom.sign}
+											</div>
+											<div className="chatroom-sign-house">
+												House: {chatroom.house}
+											</div>
+
+											<div className="chatroom-member-count">
+												{chatroom.members.length}{' '}
+												Members
+											</div>
+
+											{isMember ? (
+												<button
+													className="leave-button"
+													onClick={(e) => {
+														e.stopPropagation() // Prevent parent click
+														leaveChatroom(
+															chatroom._id
+														)
+													}}
+												>
+													Leave
+												</button>
+											) : (
+												<button
+													className="join-button"
+													onClick={() =>
+														joinChatroom(
+															chatroom._id
+														)
+													}
+												>
+													Join
+												</button>
+											)}
+										</div>
+									</div>
+								)
+							})}
+						</div>
+					) : (
+						<p className="empty-message">Make your first room!</p>
+					)}
+				</div>
 				<Modal
 					isOpen={isModalOpen}
 					onRequestClose={closeModal}

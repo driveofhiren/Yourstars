@@ -9,7 +9,7 @@ const ChatroomList = ({
 	ObjectId,
 }) => {
 	return (
-		<div className="top-div">
+		<div className="bottom-div">
 			<p>Search Results</p>
 			{chatrooms.length > 0 ? (
 				<div className="chatroom-grid">

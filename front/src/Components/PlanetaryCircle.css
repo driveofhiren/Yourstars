@@ -1,16 +1,17 @@
 .astrology-chart-container {
 	display: flex;
+	text-align: center;
 	flex-direction: column;
+	justify-content: center;
 	align-items: center;
-	background: radial-gradient(circle, #23233d, #151527);
+	background: radial-gradient(circle, #282849, #1b1b33);
 	border-radius: 50%;
-	/* width: 60vw; /* Responsive width */
-	/* height: 60vw;  */
-	width: 300px;
-	height: 300px;
-	padding: 20px;
+	width: 35vw;
+	height: 35vw;
+	font-size: small;
 	position: relative;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+	margin: 20px;
+	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 .filter-controls {
@@ -21,13 +22,13 @@
 	margin-left: 10px;
 	padding: 6px;
 	border-radius: 6px;
-	background-color: #3a3a5e;
-	color: #fff;
+	background-color: #4a4a7a;
+	color: #ffffff;
 	border: none;
 }
 
 .circle-container {
-	position: relative;
+	/* position: relative; */
 	width: 100%;
 	height: 100%;
 	border-radius: 50%;
@@ -42,57 +43,79 @@
 	transform-origin: center center;
 }
 
-.house-content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	color: #ffd700;
-	font-size: 12px;
-	transform: translateY(-50%);
-}
-:root {
-	--sun-color: #ffdb58;
-	--moon-color: #c0c0c0;
-	--mercury-color: #adadad;
-	--venus-color: #ff6f91;
-	--mars-color: #ff4500;
-	--jupiter-color: #ffd700;
-	--saturn-color: #d2b48c;
-	--uranus-color: #5f9ea0;
-	--neptune-color: #4169e1;
-	--pluto-color: #a020f0;
-	--ascendant-color: #ff6347;
-}
-
+/* Planet icon styles */
 .planet-icon {
-	font-size: 16px;
-	width: 50px;
-	height: 50px;
+	font-size: 14px;
+	width: 25px;
+	height: 25px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: var(--planet-color);
+	background-color: var(--planet-color, #ffd1dc);
 	border-radius: 50%;
-	color: #23233d;
+	color: #1b1b33;
 	cursor: pointer;
-	position: relative;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform-origin: center -12vw;
 	transition: background-color 0.3s, transform 0.3s;
 }
 
+
 .planet-icon:hover {
-	background-color: #ffed70;
-	transform: scale(1.1);
+	background-color: #ffb200;
+	transform: scale(1.25);
+	color: #1b1b33;
+	box-shadow: 0 6px 15px rgba(255, 178, 0, 0.6);
+}
+.planet-icon p {
+	color: thistle;
+	margin-bottom: 25px;
+}
+/* Display sign and degree on hover */
+.planet-icon:hover .hover-details {
+	display: block;
+}
+.hover-details {
+	display: none;
+	position: absolute;
+	top: 20px;
+	background-color: rgba(255, 255, 255, 0.95);
+	color: #222222;
+	font-size: 12px;
+	text-align: center;
+	padding: 3px 8px;
+	border-radius: 5px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Hide icon options by default */
 .icon-options {
-	display: flex;
-	gap: 8px;
+	display: none;
 	position: absolute;
-	top: -30px;
+	top: 40px;
 	left: 50%;
 	transform: translateX(-50%);
+	gap: 8px;
 }
 
+/* Show options on hover */
+.planet-icon:hover .icon-options {
+	display: flex;
+}
+
+/* Details for sign and degree */
+.hover-details {
+	display: none;
+	/* position: absolute; */
+
+	color: #000000;
+	font-size: 12px;
+	text-align: center;
+}
+
+/* Styles for filter and create icons */
 .filter-icon,
 .create-room-icon {
 	width: 20px;
@@ -100,7 +123,6 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: #ff5e7f;
 	border-radius: 50%;
 	color: #fff;
 	font-size: 12px;
@@ -113,11 +135,10 @@
 	transform: scale(1.2);
 	background-color: #03dac6;
 }
+
 @media (max-width: 768px) {
 	.astrology-chart-container {
-		width: 60vw; /* Responsive width */
-		height: 60vw;
-		/* width: 600px;
-		height: 600px; */
+		width: 90vw;
+		height: 90vw;
 	}
 }
