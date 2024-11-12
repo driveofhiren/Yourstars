@@ -6,6 +6,21 @@ import '../Components/PlanetaryCircle.css'
 const getHouseFromDegree = (degree) => Math.ceil(degree / 30)
 const degreeToPositionAngle = (degree) => (degree % 30) * (360 / 30)
 
+const planetColors = {
+	Sun: 'var(--sun-color)',
+	Moon: 'var(--moon-color)',
+	Mercury: 'var(--mercury-color)',
+	Venus: 'var(--venus-color)',
+	Mars: 'var(--mars-color)',
+	Jupiter: 'var(--jupiter-color)',
+	Saturn: 'var(--saturn-color)',
+	Uranus: 'var(--uranus-color)',
+	Neptune: 'var(--neptune-color)',
+	Pluto: 'var(--pluto-color)',
+	Ascendant: 'var(--ascendant-color)',
+	// add more as needed
+}
+
 function PlanetaryCircle({ conjunctions, createChatroom, filterChatrooms }) {
 	const [filterRoom, setFilterRoom] = useState({
 		planet: [],
@@ -62,7 +77,7 @@ function PlanetaryCircle({ conjunctions, createChatroom, filterChatrooms }) {
 	}
 
 	return (
-		<div className="astrology-chart-container">
+		<div>
 			<div className="filter-controls">
 				<label className="text-light">
 					Filter by:
@@ -82,96 +97,116 @@ function PlanetaryCircle({ conjunctions, createChatroom, filterChatrooms }) {
 					</select>
 				</label>
 			</div>
-			<div className="circle-container">
-				{[...Array(12).keys()].map((houseIndex) => (
-					<div key={houseIndex} className="circle-section">
-						<div className="circle-section-content">
-							{Object.entries(conjunctions).map(
-								([houseKey, planets]) => {
-									// Filter planets in the current house (sign)
-									const planetsInHouse = planets.filter(
-										({ degree }) =>
-											getHouseFromDegree(degree) ===
-											houseIndex + 1
-									)
+			<div className="astrology-chart-container">
+				<div className="circle-container">
+					{[...Array(12).keys()].map((houseIndex) => (
+						<div key={houseIndex} className="circle-section">
+							<div className="circle-section-content">
+								{Object.entries(conjunctions).map(
+									([houseKey, planets]) => {
+										const planetsInHouse = planets.filter(
+											({ degree }) =>
+												getHouseFromDegree(degree) ===
+												houseIndex + 1
+										)
 
-									if (planetsInHouse.length > 0) {
-										return (
-											<OverlayTrigger
-												key={houseKey}
-												placement="top"
-												trigger="click"
-												overlay={
-													<Tooltip>
-														<div className="tooltip-content">
-															<div>
-																<strong>
-																	Sign{' '}
-																	{houseKey}
-																</strong>
-															</div>
-															<div>
-																Planets:{' '}
-																{planetsInHouse
-																	.map(
-																		(
-																			planetData
-																		) =>
-																			planetData.planet
-																	)
-																	.join(', ')}
-															</div>
-															<div className="icon-options">
-																<span
-																	className="filter-icon"
-																	onClick={() =>
-																		handleFilterClick(
-																			planetsInHouse,
+										if (planetsInHouse.length > 0) {
+											return (
+												<OverlayTrigger
+													key={houseKey}
+													placement="top"
+													trigger="click"
+													overlay={
+														<Tooltip>
+															<div className="tooltip-content">
+																<div>
+																	<strong>
+																		Sign{' '}
+																		{
 																			houseKey
+																		}
+																	</strong>
+																</div>
+																<div>
+																	Planets:{' '}
+																	{planetsInHouse
+																		.map(
+																			(
+																				planetData
+																			) =>
+																				planetData.planet
 																		)
+																		.join(
+																			', '
+																		)}
+																</div>
+																<div className="icon-options">
+																	<span
+																		className="filter-icon"
+																		onClick={() =>
+																			handleFilterClick(
+																				planetsInHouse,
+																				houseKey
+																			)
+																		}
+																	>
+																		🔍
+																	</span>
+																	<span
+																		className="create-room-icon"
+																		onClick={(
+																			e
+																		) => {
+																			e.stopPropagation()
+																			handlePlanetClick(
+																				houseKey,
+																				planetsInHouse
+																			)
+																		}}
+																	>
+																		➕
+																	</span>
+																</div>
+															</div>
+														</Tooltip>
+													}
+												>
+													<div
+														className="house-icon"
+														data-house={houseKey}
+													>
+														{planetsInHouse.map(
+															(planetData) => (
+																<div
+																	key={
+																		planetData.planet
 																	}
-																>
-																	🔍
-																</span>
-																<span
-																	className="create-room-icon"
-																	onClick={(
-																		e
-																	) => {
-																		e.stopPropagation()
-																		handlePlanetClick(
-																			houseKey,
-																			planetsInHouse
-																		)
+																	className="planet-icon"
+																	style={{
+																		'--planet-color':
+																			planetColors[
+																				planetData
+																					.planet
+																			],
 																	}}
 																>
-																	➕
-																</span>
-															</div>
-														</div>
-													</Tooltip>
-												}
-											>
-												<div
-													className="house-icon"
-													style={{
-														backgroundColor: `hsl(${
-															houseIndex * 30
-														}, 80%, 60%)`,
-													}}
-													data-house={houseKey}
-												>
-													Sign {houseKey}
-												</div>
-											</OverlayTrigger>
-										)
+																	{
+																		planetData.planet
+																	}
+																</div>
+															)
+														)}
+													</div>
+												</OverlayTrigger>
+											)
+										}
+										return null
 									}
-									return null
-								}
-							)}
+								)}
+							</div>
 						</div>
-					</div>
-				))}
+					))}
+				</div>
 			</div>
 		</div>
 	)

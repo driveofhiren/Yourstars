@@ -4,8 +4,10 @@
 	align-items: center;
 	background: radial-gradient(circle, #23233d, #151527);
 	border-radius: 50%;
-	width: 600px;
-	height: 600px;
+	/* width: 60vw; /* Responsive width */
+	/* height: 60vw;  */
+	width: 300px;
+	height: 300px;
 	padding: 20px;
 	position: relative;
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -48,24 +50,38 @@
 	font-size: 12px;
 	transform: translateY(-50%);
 }
+:root {
+	--sun-color: #ffdb58;
+	--moon-color: #c0c0c0;
+	--mercury-color: #adadad;
+	--venus-color: #ff6f91;
+	--mars-color: #ff4500;
+	--jupiter-color: #ffd700;
+	--saturn-color: #d2b48c;
+	--uranus-color: #5f9ea0;
+	--neptune-color: #4169e1;
+	--pluto-color: #a020f0;
+	--ascendant-color: #ff6347;
+}
+
 .planet-icon {
 	font-size: 16px;
-	width: 50px; /* Increase width */
-	height: 50px; /* Increase height */
+	width: 50px;
+	height: 50px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: var(--planet-color, #ffd700);
+	background-color: var(--planet-color);
 	border-radius: 50%;
 	color: #23233d;
 	cursor: pointer;
 	position: relative;
-
 	transition: background-color 0.3s, transform 0.3s;
 }
 
 .planet-icon:hover {
 	background-color: #ffed70;
+	transform: scale(1.1);
 }
 
 .icon-options {
@@ -96,4 +112,12 @@
 .create-room-icon:hover {
 	transform: scale(1.2);
 	background-color: #03dac6;
+}
+@media (max-width: 768px) {
+	.astrology-chart-container {
+		width: 60vw; /* Responsive width */
+		height: 60vw;
+		/* width: 600px;
+		height: 600px; */
+	}
 }

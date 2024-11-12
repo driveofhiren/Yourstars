@@ -634,11 +634,7 @@ const ChatroomFilter = ({ userId }) => {
 							No joined chatrooms found.
 						</p>
 					)}
-					<PlanetaryCircle
-						conjunctions={conjunctions}
-						createChatroom={createChatroom}
-						filterChatrooms={filterChatrooms}
-					/>
+
 					<ChatroomList
 						chatrooms={chatrooms}
 						joinChatroom={joinChatroom}
@@ -649,6 +645,11 @@ const ChatroomFilter = ({ userId }) => {
 				</div>
 				{console.log(conjunctions)}
 
+				<PlanetaryCircle
+					conjunctions={conjunctions}
+					createChatroom={createChatroom}
+					filterChatrooms={filterChatrooms}
+				/>
 				{/* <div className="create-filter-section right-div">
 					<div className="create-chatroom">
 						<label>
