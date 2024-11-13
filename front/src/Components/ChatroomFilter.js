@@ -839,7 +839,9 @@ const ChatroomFilter = ({ userId }) => {
 							})}
 						</div>
 					) : (
-						<p className="empty-message">Make your first room!</p>
+						<p className="empty-message">
+							Hover on your planets & Make your first room!
+						</p>
 					)}
 				</div>
 				<Modal

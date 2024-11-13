@@ -64,30 +64,30 @@ const Home = ({ user, onLogin, onLogout }) => {
 				</Row>
 			</Container>
 
-			<div className="description-section mt-5">
-				<h3 className="feature-heading">What’s Coming Next?</h3>
-				<p className="feature-description">
-					We're just getting started at YourStars! Soon, you'll be
-					able to privately message other users, form deeper
-					connections, and even match with individuals who share
-					similar astrological placements.
-					<br />
-					We're also adding exciting new features like personalized
-					astrology reports, expert consultations, and more tools to
-					help you understand the stars that shape your destiny.
-				</p>
-			</div>
-
 			<div className="contribute-section mt-5">
 				<h3 className="contribute-heading">
 					How You’re Contributing to the Project
 				</h3>
 				<p className="contribute-description">
-					Every time you express, you help improve and enrich our
-					platform. Your insights are invaluable, and we’re grateful
-					for your participation. Together, we’re building a community
-					that connects people based on their celestial influences —
-					thank you for being part of the journey!
+					Every time you provide your experience, you help improve and
+					enrich our platform. Your insights are invaluable, and we’re
+					grateful for your participation. Together, we’re building a
+					community that connects people based on their celestial
+					influences — thank you for being part of the journey!
+				</p>
+			</div>
+
+			<div className="description-section mt-5">
+				<h3 className="feature-heading">What’s Coming Next?</h3>
+				<p className="feature-description">
+					We're just getting started at YourStars! In the near future,
+					we will be working on improving layouts, UI design, and
+					visualizations to enhance the overall user experience.
+					Additionally, we are implementing a rating system to assess
+					users and chatrooms based on relevance, engagement, and
+					other factors to provide a more personalized experience. We
+					also aim to enable users to provide feedback and collaborate
+					with us to continually improve the app.
 				</p>
 			</div>
 		</div>

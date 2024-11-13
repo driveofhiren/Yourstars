@@ -69,17 +69,19 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 						</option>
 					))}
 				</select>
-				<div>
-					<button
-						onClick={createDiscussion}
-						disabled={!newDiscussionName.trim()}
-					>
-						Create Discussion
-					</button>
-					<button onClick={closeModal} className="close-button">
-						Close
-					</button>
-				</div>
+
+				<button
+					onClick={createDiscussion}
+					disabled={!newDiscussionName.trim()} // disables the button if newDiscussionName is empty or whitespace
+					className={
+						!newDiscussionName.trim() ? 'disabled-button' : ''
+					} // adds a disabled style class if needed
+				>
+					Create Discussion
+				</button>
+				<button onClick={closeModal} className="close-button">
+					Close
+				</button>
 			</div>
 
 			<div>

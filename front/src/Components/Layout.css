@@ -259,7 +259,7 @@
 .primary-button,
 button {
 	font-size: smaller;
-	padding: 3px 6px;
+	padding: 6px;
 	border: none;
 	border-radius: 4px !important;
 	cursor: pointer;
@@ -389,7 +389,11 @@ button:hover {
 .messages-container p {
 	margin: 0px;
 }
-
+.disabled-button {
+	background-color: #ccc; /* a light gray to indicate disabled state */
+	color: #666;
+	cursor: not-allowed;
+}
 /* Author Name Styling */
 .messages-container {
 	border-radius: 8px;
@@ -450,9 +454,9 @@ input::placeholder {
 	border: 1px solid #5b8fb9;
 	border-radius: 6px;
 }
-.close-button {
-	margin-top: 7px !important;
-}
+/* .close-button {
+	margin-top: 7px;
+} */
 .send-button {
 	margin-left: 7px !important;
 }
