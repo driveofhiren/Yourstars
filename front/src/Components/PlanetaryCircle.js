@@ -18,7 +18,12 @@ const planetColors = {
 	Ascendant: '#FF1493',
 }
 
-function PlanetaryCircle({ conjunctions, createChatroom, filterChatrooms }) {
+function PlanetaryCircle({
+	conjunctions,
+	createChatroom,
+	filterChatrooms,
+	zodiacSigns,
+}) {
 	const [filterRoom, setFilterRoom] = useState({
 		planet: [],
 		sign: '',
@@ -111,11 +116,14 @@ function PlanetaryCircle({ conjunctions, createChatroom, filterChatrooms }) {
 									}}
 								>
 									<div className="hover-details">
-										Sign: {houseKey} | Degree:{' '}
+										{zodiacSigns[houseKey - 1]}
+										<div>{'|'}</div>
+
 										{parseFloat(planetData.degree).toFixed(
 											2
 										)}
 									</div>
+
 									<p>{planetData.planet}</p>
 									<div className="icon-options">
 										<span

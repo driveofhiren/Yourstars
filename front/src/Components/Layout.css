@@ -5,7 +5,7 @@
 	box-sizing: border-box;
 }
 .h-100 {
-	color: #fff;
+	color: #e6f5ff;
 }
 
 .box {
@@ -18,7 +18,9 @@
 .home-container {
 	padding: 30px;
 	border-radius: 10px;
-	color: #ddd;
+	background-color: rgba(48, 30, 103, 0.85); /* Slightly transparent dark */
+	color: #b6eada;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
 /* Welcome Message and Button Styles */
@@ -29,15 +31,14 @@
 .welcome-message {
 	font-size: 1.5rem;
 	font-weight: bold;
-	color: #f1f1f1;
+	color: #b6eada;
 	margin-bottom: 20px;
 }
 
 /* Login Button */
-.login-button {
-	background-color: #4b92ff;
-	color: #ffffff;
-	font-size: 1.2rem;
+.login-button,
+.logout-button {
+	color: #b6eada;
 	font-weight: 500;
 	padding: 12px 30px;
 	border: none;
@@ -47,33 +48,26 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
+.login-button {
+	background-color: #5b8fb9;
+}
 .login-button:hover {
-	background-color: #367ce8;
+	background-color: #4a79a2;
 }
 
-/* Logout Button */
 .logout-button {
 	background-color: #db4437;
-	color: #ffffff;
-	font-size: 1rem;
-	padding: 10px 20px;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	transition: background-color 0.3s;
-	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 .logout-button:hover {
 	background-color: #c13524;
 }
 
 .chatroom-grid {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: repeat(3, 1fr);
 	gap: 5px;
 	transition: transform 0.3s ease;
 }
@@ -81,7 +75,7 @@
 /* Left Division (Div 1) */
 .left-div {
 	width: 30%;
-	background-color: #eeeeee;
+	background-color: azure;
 	height: 100%;
 	text-align: center;
 	padding: 10px;
@@ -109,7 +103,6 @@
 	width: 100%;
 }
 .middle-divs p {
-	color: lightblue;
 	font-size: small;
 }
 
@@ -122,6 +115,14 @@
 .bottom-div {
 	flex: 1;
 	text-align: center;
+	background-color: none;
+	color: white;
+	border-radius: 8px;
+	padding: 10px;
+}
+
+.bottom-div .chatroom-details {
+	color: whitesmoke;
 }
 
 .inline-labels {
@@ -146,7 +147,6 @@
 	margin-bottom: 20px;
 }
 .chatrooms-section {
-	background-color: darkseagreen;
 	border-radius: 8px;
 	margin-bottom: 5px;
 }
@@ -156,7 +156,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	background-color: #cdc1ff;
+	background-color: rgba(91, 143, 185, 0.15);
 	padding: 5px;
 	border-radius: 8px;
 
@@ -191,39 +191,35 @@
 }
 .chatroom-planets {
 	font-weight: bold;
-	color: #333333;
 }
 
 .chatroom-sign-house,
 .chatroom-member-count,
 .chatroom-creator {
-	color: #333333;
 	font-size: 0.9em;
 }
 .chatroom-item.member {
-	background-color: #a3d8ff; /* Light blue for members */
-}
-
-.chatroom-item.non-member {
-	background-color: #b5c0d0;
-	/* Light gray for non-members */
-	opacity: 0.7; /* Dim the appearance */
-	cursor: default; /* Change cursor for non-selectable items */
+	background-color: rgba(91, 143, 185, 0.3);
 }
 
 .chatroom-item.member:hover {
-	background-color: #e5d1fa; /* Slightly darker blue on hover */
+	background-color: rgba(182, 234, 218, 0.1); /* Slight contrast on hover */
+}
+
+.chatroom-item.non-member {
+	background-color: rgba(48, 30, 103, 0.2); /* Muted for non-members */
+	opacity: 0.7;
+	cursor: default;
 }
 
 .chatroom-item.non-member:hover {
-	background-color: #c5d3e8; /* Keep the background consistent on hover */
+	background-color: rgba(48, 30, 103, 0.25);
 }
 
 .chatroom-member-count,
 .chatroom-discussion-count,
 .chatroom-message-count {
 	font-style: italic;
-	color: #333333;
 }
 .chatroom-item.clickable {
 	cursor: pointer;
@@ -232,7 +228,6 @@
 
 .chatroom-item.non-clickable {
 	cursor: not-allowed;
-	color: #888; /* inactive color */
 }
 
 .leave-button,
@@ -350,7 +345,15 @@ button:hover {
 	font-style: italic;
 	color: #777;
 }
-
+.ReactModal__Overlay--after-open {
+	background-color: rgba(
+		0,
+		16,
+		106,
+		0.3
+	) !important; /* Semi-transparent blue */
+	backdrop-filter: blur(30px); /* Adjust the blur radius as needed */
+}
 .discussion {
 	display: flex;
 	flex-direction: column;
@@ -359,27 +362,25 @@ button:hover {
 }
 
 .message {
-	background-color: #cce7ff;
+	background-color: rgba(91, 143, 185, 0.2);
 	border-radius: 8px;
 	padding: 10px;
-	margin-bottom: 5px;
-	position: relative;
-	color: #1e1e2f !important;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 	transition: background-color 0.3s ease, transform 0.2s ease;
 }
 .message-author {
+	color: #5b8fb9;
 	font-weight: bold;
-	color: #777;
-	margin-bottom: 5px;
 }
 
 .message-content {
 	font-size: 14px;
+	color: #0b2447;
 }
 
 .message-likes {
 	font-size: 12px;
-	color: #b0b0b8;
+	color: #19376d;
 	margin-top: 5px;
 }
 
@@ -398,7 +399,11 @@ button:hover {
 	margin-bottom: 15px;
 	scroll-behavior: smooth;
 }
-
+input::placeholder {
+	color: #fdfffe; /* Light teal for a subtle contrast */
+	opacity: 0.7; /* Adjust opacity for a softer appearance */
+	font-style: italic; /* Optional: adds a refined touch */
+}
 /* Compact Message Content Styling */
 
 /* Compact Reply Input Container */
@@ -434,15 +439,15 @@ button:hover {
 	transition: border-color 0.3s ease;
 }
 .alert {
-	background-color: #fdecea; /* Light red for errors */
-	color: #a94442;
-	border: 1px solid #f5c6cb;
+	background-color: rgba(219, 68, 55, 0.2);
+	color: #ff9a8d;
+	border: 1px solid #db4437;
 	border-radius: 6px;
 }
 .alert-success {
-	background-color: #eafaf1; /* Light green for success */
-	color: #155724 !important;
-	border: 1px solid #c3e6cb;
+	background-color: rgba(182, 234, 218, 0.1);
+	color: #b6eada;
+	border: 1px solid #5b8fb9;
 	border-radius: 6px;
 }
 .close-button {
@@ -504,14 +509,13 @@ button:hover {
 }
 .empty-message {
 	text-align: center;
-	color: #a3d8ff;
 }
 .chatrooms-section .empty-message {
 	text-align: center;
 	color: #1e1e2f;
 }
 /* Media Queries for Responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
 	.box,
 	.middle-divs {
 		flex-direction: column;
@@ -530,7 +534,7 @@ button:hover {
 
 	.chatroom-grid {
 		grid-template-columns: repeat(
-			2,
+			6,
 			1fr
 		); /* Reduce columns on smaller screens */
 	}
@@ -558,7 +562,7 @@ button:hover {
 	}
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
 	.chatroom-title {
 		font-size: 1.4em;
 	}

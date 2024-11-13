@@ -5,7 +5,7 @@ import './Default.css' // Import CSS styles
 
 const Navigation = ({ user, onLogout }) => {
 	return (
-		<Navbar bg="dark" variant="dark" expand="lg" className="custom-navbar">
+		<Navbar variant="dark" expand="lg" className="custom-navbar">
 			<Navbar.Brand as={Link} to="/" className="brand-name">
 				YourStars
 			</Navbar.Brand>

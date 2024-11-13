@@ -7,6 +7,7 @@ const ChatroomList = ({
 	leaveChatroom,
 	selectChatroom,
 	ObjectId,
+	zodiacSigns,
 }) => {
 	return (
 		<div className="bottom-div">
@@ -42,7 +43,12 @@ const ChatroomList = ({
 									</div>
 
 									<div className="chatroom-sign-house">
-										<span>Sign: {chatroom.sign}</span>
+										<span>
+											Sign:{' '}
+											{zodiacSigns[chatroom.sign - 1]}
+										</span>
+									</div>
+									<div className="chatroom-sign-house">
 										<span>House: {chatroom.house}</span>
 									</div>
 

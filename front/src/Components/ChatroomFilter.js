@@ -14,18 +14,31 @@ const modalStyles = {
 		bottom: 'auto',
 		marginRight: '-50%',
 		transform: 'translate(-50%, -50%)',
-		background: '#a3d8ff',
-		boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // corrected property name
+		background: 'azure',
+		boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
 		transition: 'background-color 0.3s ease, transform 0.2s ease',
 		width: '100%',
 		maxWidth: '90%',
 		maxHeight: 'auto',
-		// overflowY: 'auto',
 		padding: '20px',
 		borderRadius: '10px',
+		fontSize: 'small', // Set a smaller font size here
 	},
 }
-
+const zodiacSigns = [
+	'Aries', // 1
+	'Taurus', // 2
+	'Gemini', // 3
+	'Cancer', // 4
+	'Leo', // 5
+	'Virgo', // 6
+	'Libra', // 7
+	'Scorpio', // 8
+	'Sagittarius', // 9
+	'Capricorn', // 10
+	'Aquarius', // 11
+	'Pisces', // 12
+]
 const ChatroomFilter = ({ userId }) => {
 	const [astrologyData, setAstrologyData] = useState([])
 	const [ObjectId, setObjectId] = useState('')
@@ -436,10 +449,18 @@ const ChatroomFilter = ({ userId }) => {
 
 											<div className="chatroom-sign-house">
 												<span>
-													Sign: {chatroom.sign}
-												</span>
+													Sign:{' '}
+													{
+														zodiacSigns[
+															chatroom.sign - 1
+														]
+													}
+												</span>{' '}
+												{/* Subtract 1 as array is 0-based */}
+											</div>
+											<div className="chatroom-sign-house">
 												<span>
-													House: {chatroom.house}
+													House:{chatroom.house}
 												</span>
 											</div>
 
@@ -524,6 +545,24 @@ const ChatroomFilter = ({ userId }) => {
 													</span>
 													{/* User Statistics Section */}
 													<div className="chatroom-stats">
+														<div className="chatroom-sign-house">
+															<span>
+																Sign:{' '}
+																{
+																	zodiacSigns[
+																		chatroom.sign -
+																			1
+																	]
+																}
+															</span>{' '}
+															{/* Subtract 1 as array is 0-based */}
+														</div>
+														<div className="chatroom-sign-house">
+															<span>
+																House:
+																{chatroom.house}
+															</span>
+														</div>
 														<div className="chatroom-member-count">
 															{
 																chatroom.members
@@ -589,6 +628,7 @@ const ChatroomFilter = ({ userId }) => {
 						conjunctions={conjunctions}
 						createChatroom={createChatroom}
 						filterChatrooms={filterChatrooms}
+						zodiacSigns={zodiacSigns}
 					/>
 					<ChatroomList
 						chatrooms={chatrooms}
@@ -596,6 +636,7 @@ const ChatroomFilter = ({ userId }) => {
 						leaveChatroom={leaveChatroom}
 						selectChatroom={selectChatroom}
 						ObjectId={ObjectId}
+						zodiacSigns={zodiacSigns}
 					/>
 				</div>
 
@@ -737,8 +778,16 @@ const ChatroomFilter = ({ userId }) => {
 
 											<div className="chatroom-sign-house">
 												<span>
-													Sign:{chatroom.sign}
-												</span>
+													Sign:{' '}
+													{
+														zodiacSigns[
+															chatroom.sign - 1
+														]
+													}
+												</span>{' '}
+												{/* Subtract 1 as array is 0-based */}
+											</div>
+											<div className="chatroom-sign-house">
 												<span>
 													House:{chatroom.house}
 												</span>

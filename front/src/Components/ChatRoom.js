@@ -4,6 +4,7 @@ import Discussion from './Discussion'
 import './Layout.css'
 
 const Chatroom = ({ chatroom, userId, closeModal }) => {
+	console.log(chatroom)
 	const [discussions, setDiscussions] = useState([])
 	const [selectedDiscussion, setSelectedDiscussion] = useState(null)
 	const [newDiscussionName, setNewDiscussionName] = useState('')
@@ -14,7 +15,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 			const response = await axios.get(
 				`https://yourstars-lj6b.vercel.app/chatrooms/${chatroom._id}/discussions`
 			)
-			console.log(userId)
+
 			setDiscussions(response.data)
 		}
 
@@ -87,7 +88,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 						discussion={selectedDiscussion}
 						userId={userId}
 						chatroomId={chatroom._id}
-						creator={chatroom.createdBy.name}
+						creator={chatroom.createdByName}
 					/>
 				)}
 			</div>

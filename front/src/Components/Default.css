@@ -1,6 +1,6 @@
 body {
-	color: rgb(0, 0, 0);
-	background-color: #000b58 !important;
+	color: #b6eada; /* Light font color for readability */
+	background-color: #03001c !important; /* Dark background for the main body */
 }
 
 input,
@@ -9,6 +9,10 @@ button {
 	padding: 6px;
 	font-size: small;
 	margin: 0;
+	color: #e6f5ff;
+	background-color: #301e67; /* Dark input background */
+	border: 1px solid #29445a; /* Soft border */
+	border-radius: 4px;
 }
 input,
 select {
@@ -25,16 +29,14 @@ ul {
 	width: 100%;
 }
 .custom-navbar {
-	background-color: #222831; /* Dark background with slight gray tint */
+	background-color: #202040;
 	padding: 10px 20px;
-	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-	transition: background-color 0.3s ease;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 .custom-navbar .navbar-brand {
 	font-size: 1.8em;
 	font-weight: bold;
-	color: #00adb5; /* Teal color for brand text */
-	transition: color 0.3s ease;
+	color: #b6eada;
 }
 
 /* Brand Name Style */
@@ -60,13 +62,13 @@ ul {
 	color: #00bcd4 !important; /* Light cyan on hover */
 }
 button[type='submit'] {
-	margin-top: 20px !important; /* Adjust as needed */
+	margin-top: 35px !important; /* Adjust as needed */
 	font-size: 0.875rem; /* Small font size, adjust as needed */
 }
 
 /* Specific Style for Logout Link */
 .logout-link {
-	color: #ff5722 !important; /* Different color for logout */
+	color: #b6eada !important; /* Different color for logout */
 	font-weight: bold;
 }
 
