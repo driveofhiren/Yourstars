@@ -41,15 +41,19 @@ const ChatroomList = ({
 											by {chatroom.createdBy.name}
 										</span>
 									</div>
-
 									<span className="chatroom-sign-house">
 										Sign: {chatroom.sign}, House:{' '}
 										{chatroom.house}
 									</span>
 									<span className="chatroom-member-count">
 										{chatroom.members.length} Members
+									</span>{' '}
+									<span className="chatroom-discussion-count">
+										{chatroom.discussionCount} Discussions
 									</span>
-
+									<span className="chatroom-message-count">
+										{chatroom.messageCount} Messages
+									</span>
 									{isMember ? (
 										<button
 											className="leave-button"

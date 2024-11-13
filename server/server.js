@@ -478,7 +478,6 @@ app.get('/chatrooms/:chatroomId', async (req, res) => {
 
 app.post('/chatrooms/filter', async (req, res) => {
 	let { planet, sign, house, ObjectId } = req.body
-	console.log(req.body)
 
 	try {
 		// Ensure user exists
@@ -504,16 +503,105 @@ app.post('/chatrooms/filter', async (req, res) => {
 			query.createdBy = ObjectId
 		}
 
-		// Fetch chatrooms based on constructed query
-		const chatrooms = await Chatroom.find(query).populate(
-			'createdBy',
-			'name'
-		)
+		// Fetch chatrooms based on constructed query and add discussion/message count
+		const chatrooms = await Chatroom.aggregate([
+			{ $match: query },
+			{
+				$lookup: {
+					from: 'discussions', // Name of the discussions collection
+					localField: '_id',
+					foreignField: 'chatroomId',
+					as: 'discussions',
+				},
+			},
+			{
+				$lookup: {
+					from: 'messages', // Name of the messages collection
+					localField: 'discussions._id',
+					foreignField: 'discussionId',
+					as: 'messages',
+				},
+			},
+			{
+				$addFields: {
+					discussionCount: { $size: '$discussions' },
+					messageCount: { $size: '$messages' },
+				},
+			},
+			{
+				$project: {
+					planets: 1,
+					sign: 1,
+					house: 1,
+					createdBy: 1,
+					createdAt: 1,
+					members: 1,
+					discussionCount: 1,
+					messageCount: 1,
+				},
+			},
+		])
 
 		if (!chatrooms.length) {
 			return res.status(404).json({ message: 'No chatrooms found' })
 		}
 
+		res.status(200).json(chatrooms)
+	} catch (err) {
+		console.error('Error fetching chatrooms:', err)
+		res.status(500).json({ message: 'Server error' })
+	}
+})
+
+app.post('/chatrooms/filterUser', async (req, res) => {
+	let { planet, sign, house, ObjectId } = req.body
+
+	try {
+		// Ensure user exists
+		const user = await Chart.findById(ObjectId)
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' })
+		}
+
+		// Initialize an empty query
+		const query = {}
+
+		// If planets are provided, add conjunction condition
+		if (planet && planet.length > 0) {
+			query.planets = { $all: planet, $size: planet.length }
+		}
+
+		// Add sign or house to the query if provided
+		if (sign) query.sign = sign
+		if (house) query.house = house
+
+		// Only add createdBy filter if no other filters are provided
+		if (!planet?.length && !sign && !house) {
+			query.createdBy = ObjectId
+		}
+
+		// Fetch chatrooms based on constructed query
+		const chatrooms = await Chatroom.find(query)
+			.populate('createdBy', 'name')
+			.lean() // Use lean() to get plain JavaScript objects (not Mongoose docs)
+
+		if (!chatrooms.length) {
+			return res.status(404).json({ message: 'No chatrooms found' })
+		}
+
+		// Add message and discussion counts to each chatroom
+		for (const chatroom of chatrooms) {
+			// Count messages in the chatroom
+			chatroom.messageCount = await Chat.countDocuments({
+				chatroomId: chatroom._id,
+			})
+
+			// Count discussions in the chatroom
+			chatroom.discussionCount = await Discussion.countDocuments({
+				chatroomId: chatroom._id,
+			})
+		}
+		console.log(chatrooms)
 		res.status(200).json(chatrooms)
 	} catch (err) {
 		console.error('Error fetching chatrooms:', err)
@@ -546,13 +634,77 @@ app.post('/chatrooms/join', async (req, res) => {
 
 app.post('/chatrooms/joined', async (req, res) => {
 	const { ObjectId } = req.body
-	try {
-		// Find chatrooms where the user is a member
 
+	// Step 1: Ensure ObjectId is a valid MongoDB ObjectId
+	let userObjectId
+	try {
+		userObjectId = new mongoose.Types.ObjectId(ObjectId)
+	} catch (error) {
+		console.log('Invalid ObjectId format:', ObjectId) // Log the original value
+		return res.status(400).json({ message: 'Invalid ObjectId format' })
+	}
+
+	// Step 2: Log the userObjectId to verify its value
+	console.log('User ObjectId:', userObjectId)
+
+	try {
+		// Step 3: Simple query to check if any chatrooms match the user
 		const joinedChatrooms = await Chatroom.find({
-			members: ObjectId,
-		}).populate('createdBy', 'name')
-		res.json(joinedChatrooms)
+			members: { $in: [ObjectId] }, // Use $in to check if userObjectId is in the members array
+		})
+
+		// Step 4: Check if any chatrooms were found
+		if (!joinedChatrooms.length) {
+			console.warn('No chatrooms found for user:', ObjectId)
+			return res
+				.status(404)
+				.json({ message: 'No chatrooms found for this user' })
+		}
+
+		// Step 5: If chatrooms are found, perform aggregation to count discussions and messages
+		const populatedChatrooms = await Chatroom.aggregate([
+			{
+				$match: {
+					_id: { $in: joinedChatrooms.map((room) => room._id) },
+				},
+			}, // Match only the chatrooms found above
+			{
+				$lookup: {
+					from: 'discussions',
+					localField: '_id',
+					foreignField: 'chatroomId',
+					as: 'discussions',
+				},
+			},
+			{
+				$addFields: {
+					discussionCount: { $size: '$discussions' },
+				},
+			},
+			{
+				$lookup: {
+					from: 'messages',
+					localField: 'discussions._id',
+					foreignField: 'discussionId',
+					as: 'allMessages',
+				},
+			},
+			{
+				$addFields: {
+					messageCount: { $size: '$allMessages' },
+				},
+			},
+			{
+				$project: {
+					discussions: 0, // Optionally remove discussions if not needed
+					allMessages: 0, // Optionally remove messages if not needed
+				},
+			},
+		])
+
+		// Step 6: Return the populated chatrooms with counts
+
+		res.json(populatedChatrooms)
 	} catch (err) {
 		console.error('Error fetching joined chatrooms:', err)
 		res.status(500).json({ message: 'Server error' })
@@ -563,7 +715,6 @@ app.post('/chatrooms/joined', async (req, res) => {
 app.post('/chatrooms/:id/leave', async (req, res) => {
 	const chatroomId = req.params.id
 	const { ObjectId } = req.body
-	console.log(ObjectId)
 
 	try {
 		const chatroom = await Chatroom.findById(chatroomId)
