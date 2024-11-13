@@ -219,7 +219,9 @@
 	background-color: #c5d3e8; /* Keep the background consistent on hover */
 }
 
-.chatroom-member-count {
+.chatroom-member-count,
+.chatroom-discussion-count,
+.chatroom-message-count {
 	font-style: italic;
 	color: #333333;
 }

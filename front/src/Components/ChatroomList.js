@@ -36,24 +36,29 @@ const ChatroomList = ({
 										<span className="chatroom-planets">
 											{chatroom.planets.join(', ')}
 										</span>
-
 										<span className="chatroom-member-count">
-											by {chatroom.createdBy.name}
+											by {chatroom.createdByName}
 										</span>
 									</div>
-									<span className="chatroom-sign-house">
-										Sign: {chatroom.sign}, House:{' '}
-										{chatroom.house}
-									</span>
-									<span className="chatroom-member-count">
-										{chatroom.members.length} Members
-									</span>{' '}
-									<span className="chatroom-discussion-count">
-										{chatroom.discussionCount} Discussions
-									</span>
-									<span className="chatroom-message-count">
-										{chatroom.messageCount} Messages
-									</span>
+
+									<div className="chatroom-sign-house">
+										<span>Sign: {chatroom.sign}</span>
+										<span>House: {chatroom.house}</span>
+									</div>
+
+									{/* User Statistics Section */}
+									<div className="chatroom-stats">
+										<div className="chatroom-member-count">
+											{chatroom.members.length} Members
+										</div>
+										<div className="chatroom-discussion-count">
+											{chatroom.discussionCount}{' '}
+											Discussions
+										</div>
+										<div className="chatroom-message-count">
+											{chatroom.messageCount} Messages
+										</div>
+									</div>
 									{isMember ? (
 										<button
 											className="leave-button"

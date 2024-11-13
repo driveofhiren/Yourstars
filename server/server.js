@@ -476,7 +476,7 @@ app.get('/chatrooms/:chatroomId', async (req, res) => {
 	}
 })
 
-app.post('/chatrooms/filter', async (req, res) => {
+app.post('/chatrooms/filterOld', async (req, res) => {
 	let { planet, sign, house, ObjectId } = req.body
 
 	try {
@@ -523,9 +523,20 @@ app.post('/chatrooms/filter', async (req, res) => {
 				},
 			},
 			{
+				$lookup: {
+					from: 'charts', // Look up the 'Chart' collection to get user data
+					localField: 'createdBy',
+					foreignField: '_id',
+					as: 'createdByDetails',
+				},
+			},
+			{
 				$addFields: {
 					discussionCount: { $size: '$discussions' },
 					messageCount: { $size: '$messages' },
+					createdByName: {
+						$arrayElemAt: ['$createdByDetails.name', 0],
+					}, // Get the first user name from the array
 				},
 			},
 			{
@@ -534,6 +545,7 @@ app.post('/chatrooms/filter', async (req, res) => {
 					sign: 1,
 					house: 1,
 					createdBy: 1,
+					createdByName: 1, // Include the createdBy name
 					createdAt: 1,
 					members: 1,
 					discussionCount: 1,
@@ -553,10 +565,15 @@ app.post('/chatrooms/filter', async (req, res) => {
 	}
 })
 
-app.post('/chatrooms/filterUser', async (req, res) => {
+app.post('/chatrooms/filter', async (req, res) => {
 	let { planet, sign, house, ObjectId } = req.body
 
 	try {
+		// Convert `ObjectId` string to Mongoose ObjectId if provided
+		if (ObjectId) {
+			ObjectId = new mongoose.Types.ObjectId(ObjectId)
+		}
+
 		// Ensure user exists
 		const user = await Chart.findById(ObjectId)
 		if (!user) {
@@ -575,33 +592,67 @@ app.post('/chatrooms/filterUser', async (req, res) => {
 		if (sign) query.sign = sign
 		if (house) query.house = house
 
-		// Only add createdBy filter if no other filters are provided
+		// If no planet, sign, or house filters are provided, use `createdBy` filter
 		if (!planet?.length && !sign && !house) {
 			query.createdBy = ObjectId
 		}
 
-		// Fetch chatrooms based on constructed query
-		const chatrooms = await Chatroom.find(query)
-			.populate('createdBy', 'name')
-			.lean() // Use lean() to get plain JavaScript objects (not Mongoose docs)
+		// Fetch chatrooms based on constructed query and add discussion/message count
+		const chatrooms = await Chatroom.aggregate([
+			{ $match: query },
+			{
+				$lookup: {
+					from: 'discussions', // Name of the discussions collection
+					localField: '_id',
+					foreignField: 'chatroomId',
+					as: 'discussions',
+				},
+			},
+			{
+				$lookup: {
+					from: 'messages', // Name of the messages collection
+					localField: 'discussions._id',
+					foreignField: 'discussionId',
+					as: 'messages',
+				},
+			},
+			{
+				$lookup: {
+					from: 'charts', // Look up the 'Chart' collection to get user data
+					localField: 'createdBy',
+					foreignField: '_id',
+					as: 'createdByDetails',
+				},
+			},
+			{
+				$addFields: {
+					discussionCount: { $size: '$discussions' },
+					messageCount: { $size: '$messages' },
+					createdByName: {
+						$arrayElemAt: ['$createdByDetails.name', 0],
+					}, // Get the first user name from the array
+				},
+			},
+			{
+				$project: {
+					planets: 1,
+					sign: 1,
+					house: 1,
+					createdBy: 1,
+					createdByName: 1, // Include the createdBy name
+					createdAt: 1,
+					members: 1,
+					discussionCount: 1,
+					messageCount: 1,
+				},
+			},
+		])
 
 		if (!chatrooms.length) {
 			return res.status(404).json({ message: 'No chatrooms found' })
 		}
-
-		// Add message and discussion counts to each chatroom
-		for (const chatroom of chatrooms) {
-			// Count messages in the chatroom
-			chatroom.messageCount = await Chat.countDocuments({
-				chatroomId: chatroom._id,
-			})
-
-			// Count discussions in the chatroom
-			chatroom.discussionCount = await Discussion.countDocuments({
-				chatroomId: chatroom._id,
-			})
-		}
 		console.log(chatrooms)
+
 		res.status(200).json(chatrooms)
 	} catch (err) {
 		console.error('Error fetching chatrooms:', err)
@@ -645,7 +696,6 @@ app.post('/chatrooms/joined', async (req, res) => {
 	}
 
 	// Step 2: Log the userObjectId to verify its value
-	console.log('User ObjectId:', userObjectId)
 
 	try {
 		// Step 3: Simple query to check if any chatrooms match the user
@@ -695,12 +745,28 @@ app.post('/chatrooms/joined', async (req, res) => {
 				},
 			},
 			{
+				$lookup: {
+					from: 'charts', // This is the 'Chart' collection where user data is stored
+					localField: 'createdBy', // The field in Chatroom that references the user
+					foreignField: '_id', // The field in Chart that is the primary key
+					as: 'creator', // Alias for the result of the lookup
+				},
+			},
+			{
+				$addFields: {
+					createdBy: { $arrayElemAt: ['$creator.name', 0] }, // Extract the first element from the creator array
+				},
+			},
+			{
 				$project: {
 					discussions: 0, // Optionally remove discussions if not needed
 					allMessages: 0, // Optionally remove messages if not needed
+					creator: 0, // Optionally remove the full creator object if only the name is needed
 				},
 			},
 		])
+
+		// Now, you will have a field `creatorName` in the result, which contains the name of the person who created the chatroom.
 
 		// Step 6: Return the populated chatrooms with counts
 
@@ -904,7 +970,7 @@ app.post('/messages/:messageId/reply', async (req, res) => {
 	const { userId, content } = req.body
 
 	const user = await Chart.findOne({ id: userId })
-	console.log(userId)
+
 	// const message = new Message({ discussionId, user: user._id, content })
 
 	try {

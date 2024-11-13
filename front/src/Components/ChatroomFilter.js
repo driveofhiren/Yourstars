@@ -89,7 +89,7 @@ const ChatroomFilter = ({ userId }) => {
 					'https://yourstars-lj6b.vercel.app/chatrooms/filter',
 					filterData
 				)
-				console.log(response.data)
+
 				// Aggregate results into `fetchedRelatedRooms`
 				if (response.data) {
 					fetchedRelatedRooms.push(...response.data)
@@ -141,8 +141,10 @@ const ChatroomFilter = ({ userId }) => {
 	const fetchYourRooms = async () => {
 		try {
 			const response = await axios.post(
-				`https://yourstars-lj6b.vercel.app/chatrooms/filterUser`,
-				{ ObjectId }
+				`https://yourstars-lj6b.vercel.app/chatrooms/filter`,
+				{
+					ObjectId,
+				}
 			)
 			console.log(response.data)
 			setYourRooms(response.data)
@@ -306,7 +308,7 @@ const ChatroomFilter = ({ userId }) => {
 
 	const filterChatrooms = async (filterRoom) => {
 		const { planet, sign, house, filterBy } = filterRoom
-		console.log(filterRoom)
+
 		setChatrooms([])
 		if (!planet || !filterBy) {
 			alert(
@@ -320,7 +322,6 @@ const ChatroomFilter = ({ userId }) => {
 				planet,
 				ObjectId,
 			}
-
 			if (filterBy === 'sign' && sign) filterData.sign = sign
 			if (filterBy === 'both' && sign && house) {
 				filterData.sign = sign
@@ -429,26 +430,34 @@ const ChatroomFilter = ({ userId }) => {
 													)}
 												</span>
 												<span className="chatroom-member-count">
-													by {chatroom.createdBy.name}
+													by {chatroom.createdBy}
 												</span>
 											</div>
 
-											<span className="chatroom-sign-house">
-												Sign: {chatroom.sign}, House:{' '}
-												{chatroom.house}
-											</span>
-
-											<div className="chatroom-member-count">
-												{chatroom.members.length}{' '}
-												Members
+											<div className="chatroom-sign-house">
+												<span>
+													Sign: {chatroom.sign}
+												</span>
+												<span>
+													House: {chatroom.house}
+												</span>
 											</div>
-											<span className="chatroom-discussion-count">
-												{chatroom.discussionCount}{' '}
-												Discussions
-											</span>
-											<span className="chatroom-message-count">
-												{chatroom.messageCount} Messages
-											</span>
+
+											{/* User Statistics Section */}
+											<div className="chatroom-stats">
+												<div className="chatroom-member-count">
+													{chatroom.members.length}{' '}
+													Members
+												</div>
+												<div className="chatroom-discussion-count">
+													{chatroom.discussionCount}{' '}
+													Discussions
+												</div>
+												<div className="chatroom-message-count">
+													{chatroom.messageCount}{' '}
+													Messages
+												</div>
+											</div>
 											<span>
 												<button
 													className="leave-button"
@@ -511,32 +520,30 @@ const ChatroomFilter = ({ userId }) => {
 													</span>
 													<span className="chatroom-member-count">
 														by{' '}
-														{
-															chatroom.createdBy
-																.name
-														}
+														{chatroom.createdByName}
 													</span>
-													<span className="chatroom-sign-house">
-														Sign: {chatroom.sign},
-														House: {chatroom.house}
-													</span>
-													<span className="chatroom-member-count">
-														{
-															chatroom.members
-																.length
-														}{' '}
-														Members
-													</span>
-													<span className="chatroom-discussion-count">
-														{
-															chatroom.discussionCount
-														}{' '}
-														Discussions
-													</span>
-													<span className="chatroom-message-count">
-														{chatroom.messageCount}{' '}
-														Messages
-													</span>
+													{/* User Statistics Section */}
+													<div className="chatroom-stats">
+														<div className="chatroom-member-count">
+															{
+																chatroom.members
+																	.length
+															}{' '}
+															Members
+														</div>
+														<div className="chatroom-discussion-count">
+															{
+																chatroom.discussionCount
+															}{' '}
+															Discussions
+														</div>
+														<div className="chatroom-message-count">
+															{
+																chatroom.messageCount
+															}{' '}
+															Messages
+														</div>
+													</div>
 												</div>
 												{isMember ? (
 													<button
@@ -591,7 +598,6 @@ const ChatroomFilter = ({ userId }) => {
 						ObjectId={ObjectId}
 					/>
 				</div>
-				{console.log(conjunctions)}
 
 				{/* <div className="create-filter-section right-div">
 					<div className="create-chatroom">
@@ -703,7 +709,7 @@ const ChatroomFilter = ({ userId }) => {
 								// Check if the user is a member of the chatroom
 								const isMember =
 									chatroom.members.includes(ObjectId)
-								console.log(YourRooms)
+
 								return (
 									<div
 										key={chatroom._id}
@@ -730,23 +736,29 @@ const ChatroomFilter = ({ userId }) => {
 											</div>
 
 											<div className="chatroom-sign-house">
-												Sign: {chatroom.sign}
-											</div>
-											<div className="chatroom-sign-house">
-												House: {chatroom.house}
+												<span>
+													Sign:{chatroom.sign}
+												</span>
+												<span>
+													House:{chatroom.house}
+												</span>
 											</div>
 
-											<div className="chatroom-member-count">
-												{chatroom.members.length}{' '}
-												Members
+											{/* User Statistics Section */}
+											<div className="chatroom-stats">
+												<div className="chatroom-member-count">
+													{chatroom.members.length}{' '}
+													Members
+												</div>
+												<div className="chatroom-discussion-count">
+													{chatroom.discussionCount}{' '}
+													Discussions
+												</div>
+												<div className="chatroom-message-count">
+													{chatroom.messageCount}{' '}
+													Messages
+												</div>
 											</div>
-											<span className="chatroom-discussion-count">
-												{chatroom.discussionCount}{' '}
-												Discussions
-											</span>
-											<span className="chatroom-message-count">
-												{chatroom.messageCount} Messages
-											</span>
 
 											{isMember ? (
 												<button
