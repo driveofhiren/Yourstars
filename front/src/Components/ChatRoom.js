@@ -9,6 +9,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 	const [selectedDiscussion, setSelectedDiscussion] = useState(null)
 	const [newDiscussionName, setNewDiscussionName] = useState('')
 	const [newDiscussionType, setNewDiscussionType] = useState('General')
+	console.log(chatroom)
 
 	useEffect(() => {
 		const fetchDiscussions = async () => {
@@ -90,7 +91,7 @@ const Chatroom = ({ chatroom, userId, closeModal }) => {
 						discussion={selectedDiscussion}
 						userId={userId}
 						chatroomId={chatroom._id}
-						creator={chatroom.createdByName}
+						creator={chatroom.createdBy}
 					/>
 				)}
 			</div>

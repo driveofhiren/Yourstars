@@ -53,6 +53,7 @@ const Discussion = ({ discussion, userId, chatroomId, creator }) => {
 			`https://yourstars-lj6b.vercel.app/chatrooms/${chatroomId}`
 		)
 		setChatroom(response.data)
+		console.log(chatroom)
 	}
 
 	// Fetch current user MongoDB ID
