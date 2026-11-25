@@ -52,21 +52,8 @@ const Home = ({ user, onLogin, onLogout }) => {
 	return (
 		<div className="container text-center mt-5 home-container">
 			<h1 className="display-3 app-title">Welcome to YourStars</h1>
-			<Form onSubmit={handleSubmit}>
-				<Form.Control
-					as="textarea"
-					rows={6}
-					value={content}
-					onChange={(e) => setContent(e.target.value)}
-					placeholder="Write anything..."
-					required
-				/>
 
-				<Button type="submit" className="mt-3">
-					Submit
-				</Button>
-			</Form>
-			{/* <div className="anonymous-submit-section mt-5">
+			<div className="anonymous-submit-section mt-5">
 				<h3>Share Your Thoughts</h3>
 
 				<p className="mt-3">{submitMessage}</p>
@@ -138,7 +125,7 @@ const Home = ({ user, onLogin, onLogout }) => {
 					also aim to enable users to provide feedback and collaborate
 					with us to continually improve the app.
 				</p>
-			</div> */}
+			</div>
 		</div>
 	)
 }
