@@ -66,7 +66,7 @@ const Home = ({ user, onLogin, onLogout }) => {
 					Submit
 				</Button>
 			</Form>
-			{/* <div className="anonymous-submit-section mt-5">
+			<div className="anonymous-submit-section mt-5">
 				<h3>Share Your Thoughts</h3>
 
 				<p className="mt-3">{submitMessage}</p>
@@ -138,7 +138,7 @@ const Home = ({ user, onLogin, onLogout }) => {
 					also aim to enable users to provide feedback and collaborate
 					with us to continually improve the app.
 				</p>
-			</div> */}
+			</div>
 		</div>
 	)
 }
