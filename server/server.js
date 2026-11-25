@@ -111,6 +111,49 @@ const Message = mongoose.model('Message', messageSchema)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
+const SubmissionSchema = new mongoose.Schema({
+	content: {
+		type: String,
+		required: true,
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	},
+})
+
+const Submission = mongoose.model('Submission', SubmissionSchema)
+
+app.post('/submit', async (req, res) => {
+	try {
+		const { content } = req.body
+
+		if (typeof content !== 'string' || content.length === 0) {
+			return res.status(400).json({
+				error: 'Message is required',
+			})
+		}
+
+		const submission = new Submission({
+			content: content,
+		})
+
+		await submission.save()
+
+		res.status(201).json({
+			success: true,
+			message: 'Submitted successfully',
+			submissionId: submission._id,
+		})
+	} catch (error) {
+		console.error(error)
+
+		res.status(500).json({
+			error: 'Submission failed',
+		})
+	}
+})
+
 // Analyze content for astrological influences
 
 app.post('/analyze', async (req, res) => {
@@ -212,7 +255,7 @@ app.post('/fetchAstrologyData', async (req, res) => {
 			if (err.code === 11000) {
 				console.error('Duplicate key error:', err)
 				res.status(400).send(
-					'Duplicate key error: username might be null or already exists.'
+					'Duplicate key error: username might be null or already exists.',
 				)
 			} else {
 				console.error('Error saving user data:', err)
@@ -441,7 +484,7 @@ app.post('/chatrooms/filter', async (req, res) => {
 		if (!planet?.length && !sign && !house) {
 			query.createdBy = ObjectId
 		}
-
+		console.log(query)
 		// Fetch chatrooms based on constructed query and add discussion/message count
 		const chatrooms = await Chatroom.aggregate([
 			{ $match: query },
@@ -496,7 +539,6 @@ app.post('/chatrooms/filter', async (req, res) => {
 		if (!chatrooms.length) {
 			return res.status(404).json({ message: 'No chatrooms found' })
 		}
-		console.log(chatrooms)
 
 		res.status(200).json(chatrooms)
 	} catch (err) {
@@ -634,7 +676,7 @@ app.post('/chatrooms/:id/leave', async (req, res) => {
 		}
 
 		chatroom.members = chatroom.members.filter(
-			(member) => member.toString() !== ObjectId
+			(member) => member.toString() !== ObjectId,
 		)
 		await chatroom.save()
 		res.status(200).json(chatroom)
@@ -705,7 +747,7 @@ app.post(
 			await discussion.save()
 		}
 		res.json(discussion)
-	}
+	},
 )
 
 app.post(
@@ -715,11 +757,11 @@ app.post(
 		const { userId } = req.body
 		const discussion = await Discussion.findById(discussionId)
 		discussion.members = discussion.members.filter(
-			(member) => member.toString() !== userId
+			(member) => member.toString() !== userId,
 		)
 		await discussion.save()
 		res.json(discussion)
-	}
+	},
 )
 
 app.post('/discussions/:discussionId/messages', async (req, res) => {
@@ -765,7 +807,7 @@ app.post('/messages/:messageId/like', async (req, res) => {
 
 		// Find if the user has already liked/disliked the message
 		const existingLikeIndex = message.likedBy.findIndex((entry) =>
-			entry.userId.equals(user._id)
+			entry.userId.equals(user._id),
 		)
 
 		if (existingLikeIndex > -1) {

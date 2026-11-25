@@ -90,22 +90,36 @@ const ChatroomFilter = ({ userId }) => {
 			const house = calculateHouse(sign)
 
 			// Prepare filter data for this conjunction
-			const filterData = {
+			const filterSign = {
 				planet: planetNames, // List of planet names in the conjunction
 				sign, // Calculated sign for the conjunction
+				// Calculated house for the conjunction
+				ObjectId: ObjectId, // User's ObjectId for createdBy filtering
+			}
+
+			const filterHouse = {
+				planet: planetNames, // List of planet names in the conjunction
+				// Calculated sign for the conjunction
 				house, // Calculated house for the conjunction
 				ObjectId: ObjectId, // User's ObjectId for createdBy filtering
 			}
 
 			try {
-				const response = await axios.post(
-					'https://yourstars-lj6b.vercel.app/chatrooms/filter',
-					filterData
+				const signrooms = await axios.post(
+					'http://localhost:3000/chatrooms/filter',
+					filterSign
+				)
+				const houserooms = await axios.post(
+					'http://localhost:3000/chatrooms/filter',
+					filterHouse
 				)
 
 				// Aggregate results into `fetchedRelatedRooms`
-				if (response.data) {
-					fetchedRelatedRooms.push(...response.data)
+				if (signrooms.data && houserooms.data) {
+					fetchedRelatedRooms.push(
+						...signrooms.data,
+						...houserooms.data
+					)
 				}
 			} catch (err) {
 				console.error('Error fetching related chatrooms:', err)

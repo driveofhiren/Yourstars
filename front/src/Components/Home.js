@@ -1,11 +1,39 @@
 // src/Components/Home.js
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { auth, googleProvider, onAuthStateChanged } from './Firebase'
 import { signInWithPopup } from 'firebase/auth'
 import { Container, Row, Col, Button, Form } from 'react-bootstrap'
 import './Default.css'
 
 const Home = ({ user, onLogin, onLogout }) => {
+	const [content, setContent] = useState('')
+	const [submitMessage, setSubmitMessage] = useState('')
+
+	const handleSubmit = async (e) => {
+		e.preventDefault()
+
+		try {
+			const response = await fetch(
+				'https://yourstars-lj6b.vercel.app/submit',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ content }),
+				},
+			)
+
+			const data = await response.json()
+
+			if (!response.ok) throw new Error(data.error)
+
+			setContent('')
+			setSubmitMessage('Submitted successfully!')
+		} catch (error) {
+			setSubmitMessage('Submission failed.')
+		}
+	}
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
@@ -24,6 +52,27 @@ const Home = ({ user, onLogin, onLogout }) => {
 	return (
 		<div className="container text-center mt-5 home-container">
 			<h1 className="display-3 app-title">Welcome to YourStars</h1>
+			<Form onSubmit={handleSubmit}>
+				<Form.Control
+					as="textarea"
+					rows={6}
+					value={content}
+					onChange={(e) => setContent(e.target.value)}
+					placeholder="Write anything..."
+					required
+				/>
+
+				<Button type="submit" className="mt-3">
+					Submit
+				</Button>
+			</Form>
+			{/* <div className="anonymous-submit-section mt-5">
+				<h3>Share Your Thoughts</h3>
+
+				<p className="mt-3">{submitMessage}</p>
+			</div>
+			<div className="contribute-section mt-5"></div>
+
 			<p className="lead tagline">
 				Dive into your astrological journey and connect with others who
 				share your cosmic influence.
@@ -89,7 +138,7 @@ const Home = ({ user, onLogin, onLogout }) => {
 					also aim to enable users to provide feedback and collaborate
 					with us to continually improve the app.
 				</p>
-			</div>
+			</div> */}
 		</div>
 	)
 }
