@@ -124,36 +124,6 @@ const SubmissionSchema = new mongoose.Schema({
 
 const Submission = mongoose.model('Submission', SubmissionSchema)
 
-app.post('/submit', async (req, res) => {
-	try {
-		const { content } = req.body
-
-		if (typeof content !== 'string' || content.length === 0) {
-			return res.status(400).json({
-				error: 'Message is required',
-			})
-		}
-
-		const submission = new Submission({
-			content: content,
-		})
-
-		await submission.save()
-
-		res.status(201).json({
-			success: true,
-			message: 'Submitted successfully',
-			submissionId: submission._id,
-		})
-	} catch (error) {
-		console.error(error)
-
-		res.status(500).json({
-			error: 'Submission failed',
-		})
-	}
-})
-
 // Analyze content for astrological influences
 
 app.post('/analyze', async (req, res) => {
